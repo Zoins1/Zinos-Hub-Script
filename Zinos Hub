@@ -1,28 +1,72 @@
--- [[ Zoins Hub - ط§ظ„ط¥طµط¯ط§ط± ط§ظ„ظ…طµظ„ط­ ظˆط§ظ„ظ…ط­ظ…ظٹ ط¨ط§ظ„ظƒط§ظ…ظ„ ]] --
+-- [[ Zoins Hub - الإصدار المحدث ]] --
 
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 
--- ظˆط¸ظٹظپط© ظپظƒ ط§ظ„طھط±ظ…ظٹط² ظ„ظ„ط­ظپط§ط¸ ط¹ظ„ظ‰ ط§ظ„ظ„ط؛ط© ط§ظ„ط¹ط±ط¨ظٹط© ظ…ظ† ط§ظ„طھظ„ظپ ط£ط«ظ†ط§ط، ط§ظ„طھط´ظپظٹط±
-local function _D(b)
-    local s = ""
-    for _, v in ipairs(b) do s = s .. string.char(v) end
-    return s
-end
-
--- 1. ظ‚ط§ط¦ظ…ط© ط§ظ„ظ…ط§ط¨ط§طھ (ظ†ظپط³ طھط±طھظٹط¨ظƒ ظˆط£ط³ظ…ط§ط¦ظƒ ط§ظ„ط£طµظ„ظٹط© ظ…ط¹ ط­ظ…ط§ظٹط© ط§ظ„ظ†طµظˆطµ)
+-- 1. قائمة المابات
 local MyMaps = {
-    {English = "Universal Script (ظƒظ„ ط§ظ„ظ…ط§ط¨ط§طھ)", Arabic = _D({216, 179, 216, 170, 216, 177, 216, 168, 216, 170, 32, 216, 185, 216, 167, 217, 133, 32, 217, 132, 217, 131, 217, 132, 32, 216, 167, 217, 132, 217, 133, 216, 167, 216, 168, 216, 167, 216, 170}), Keywords = "universal speed fly noclip jump hack ظƒظ„ ط§ظ„ظ…ط§ط¨ط§طھ", Scripts = {{Link = "https://rawscripts.net/raw/Universal-Script-VR7-45290"}}},
-    {English = "99 Nights", Arabic = _D({217, 133, 216, 167, 216, 168, 32, 216, 181, 216, 177, 217, 130, 217, 135}), Keywords = "99 ظ„ظٹظ„ظ‡ 99 ظ„ظٹظ„ط© ظ…ط§ط¨ طµط±ظ‚ظ‡ ظ…ط§ط¨ طµط±ظ‚ط© ط³ط±ظ‚ظ‡ ط³ط±ظ‚ط©", Scripts = {{Link = "https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua"}}},
-    {English = "MM2", Arabic = _D({216, 172, 216, 177, 217, 138, 217, 133, 216, 169, 32, 217, 130, 216, 170, 217, 132}), Keywords = "ط¬ط±ظٹظ…ظ‡ ظ‚طھظ„ ط؛ط§ظ…ط¶ظ‡ ط¬ط±ظٹظ…ط© ظ‚طھظ„ ط؛ط§ظ…ط¶ط© ظ…ط±ط¯ط± ظ…ط³طھط±ظٹ ظ…ظ…2 mm2", Scripts = {{Link = "https://raw.githubusercontent.com/Joystickplays/psychic-octo-invention/main/source/yarhm/1.19/yarhm.lua"}}},
-    {English = "BROOKHAVEN", Arabic = _D({217, 133, 216, 167, 216, 168, 32, 216, 168, 217, 138, 217, 133, 216, 170}), Keywords = "ط¨ط±ظˆط®ط§ظپظ† ظ…ط§ط¨ ط§ظ„ط¨ظٹظˆطھ ط¨ظٹظˆطھ ط¨ط±ظˆظƒ ظ‡ط§ظپظ†", Scripts = {{Link = "https://rawscripts.net/raw/Universal-Script-VR7-45290"}}},
-    {English = "Steal a Brainrot", Arabic = _D({217, 133, 216, 167, 216, 168, 32, 216, 181, 216, 177, 217, 130, 217, 135}), Keywords = "ظ…ط§ط¨ ط³ط±ظ‚ط© ظ…ط§ط¨ ط³ط±ظ‚ظ‡ ظ…ط§ط¨ طµط±ظ‚ط© ظ…ط§ط¨ طµط±ظ‚ظ‡", Scripts = {{Link = "https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua"}}},
-    {English = "Blox Fruits", Arabic = _D({216, 168, 217, 132, 217, 136, 217, 131, 216, 179, 32, 217, 132, 216, 177, 217, 136, 216, 170}), Keywords = "ظˆظ† ط¨ظٹط³ ظپظˆط§ظƒظ‡ ط¨ظ„ظˆظƒط³ ظپط±ظˆطھ ظˆظ†ط¨ظٹط³", Scripts = {{Link = "https://raw.githubusercontent.com/REDZHUB/Blox_Fruits/main/main.lua"}}},
-    {English = "ظپط¹ط§ظ„ظٹط§طھ ط§ظ„ط±ط³ظ… ظ„ظ„ط¹ط±ط¨", Arabic = _D({217, 133, 216, 167, 216, 168, 32, 216, 177, 216, 179, 217, 133}), Keywords = "ط±ط³ظ… ط¹ط±ط¨ ظپط¹ط§ظ„ظٹط§طھ ظ…ط§ط¨ ط§ظ„ط±ط³ظ… ط±ط³ظ…", Scripts = {{Link = "https://rawscripts.net/raw/Universal-Script-HD-copying-LOSKY-59113"}}}
+    {
+        English = "Universal Script", -- تم مسح "كل مابات" من هنا
+        Arabic = "سكربت عام", -- تم مسح "كل مابات" من هنا
+        Keywords = "universal speed fly noclip jump hack كل مابات", 
+        Scripts = {
+            {Name = "Script 1", Link = "https://rawscripts.net/raw/Universal-Script-VR7-45290"},
+            {Name = "Script 2", Link = "https://rawscripts.net/raw/Universal-Script-Simple-GUI-V1-39993"}
+        }
+    },
+    {English = "99 Nights", Arabic = "99 ليلة", Keywords = "99 ليله 99 ليلة ماب صرقه ماب صرقة سرقه سرقة", Scripts = {{Link = "https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua"}}},
+    {English = "MM2", Arabic = "جريمة قتل غامضة", Keywords = "جريمه قتل غامضه جريمة قتل غامضة مردر مستري مم2 mm2", Scripts = {{Link = "https://raw.githubusercontent.com/Joystickplays/psychic-octo-invention/main/source/yarhm/1.19/yarhm.lua"}}},
+    {
+        English = "BROOKHAVEN", 
+        Arabic = "بروخافن", 
+        Keywords = "بروخافن ماب البيوت بيوت بروك هافن", 
+        Scripts = {
+            {Name = "Script 1", Link = "https://rawscripts.net/raw/Universal-Script-VR7-45290"},
+            {Name = "Script 2", Link = "https://rawscripts.net/raw/Brookhaven-RP-Rael-Hub-58126"}
+        }
+    },
+    {English = "Steal a Brainrot", Arabic = "ماب سرقة", Keywords = "ماب سرقة ماب سرقه ماب صرقة ماب صرقه", Scripts = {{Link = "https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua"}}},
+    {English = "Blox Fruits", Arabic = "بلوكس فروتس", Keywords = "ون بيس فواكه بلوكس فروت ونبيس", Scripts = {{Link = "https://raw.githubusercontent.com/REDZHUB/Blox_Fruits/main/main.lua"}}},
+    {English = "فعاليات الرسم للعرب", Arabic = "فعاليات الرسم للعرب", Keywords = "رسم عرب فعاليات ماب الرسم رسم", Scripts = {{Link = "https://rawscripts.net/raw/Universal-Script-HD-copying-LOSKY-59113"}}}
 }
 
--- ط¨ظ‚ظٹط© ط§ظ„ط³ظƒط±ط¨طھ (ط§ظ„ظˆط§ط¬ظ‡ط© ظˆط§ظ„ط£ظ„ظˆط§ظ†)
+-- الواجهة الأساسية
 local sgui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+
+-- [[ وظيفة رسالة التنبيه عند التشغيل ]] --
+local function ShowNotification()
+    local NotifFrame = Instance.new("Frame", sgui)
+    NotifFrame.Size = UDim2.new(0, 250, 0, 60)
+    NotifFrame.Position = UDim2.new(1, 50, 0.1, 0)
+    NotifFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    NotifFrame.BorderSizePixel = 0
+    Instance.new("UICorner", NotifFrame)
+    
+    local stroke = Instance.new("UIStroke", NotifFrame)
+    stroke.Color = Color3.fromRGB(184, 134, 11)
+    stroke.Thickness = 2
+
+    local NotifText = Instance.new("TextLabel", NotifFrame)
+    NotifText.Size = UDim2.new(1, -20, 1, 0)
+    NotifText.Position = UDim2.new(0, 10, 0, 0)
+    NotifText.BackgroundTransparency = 1
+    NotifText.Text = "اذا مااشتغل سكربت شغل VPN"
+    NotifText.TextColor3 = Color3.new(1, 1, 1)
+    NotifText.Font = Enum.Font.GothamBold
+    NotifText.TextSize = 14
+    NotifText.TextWrapped = true
+
+    NotifFrame:TweenPosition(UDim2.new(1, -260, 0.1, 0), "Out", "Quad", 0.5, true)
+    
+    task.delay(5, function()
+        NotifFrame:TweenPosition(UDim2.new(1, 50, 0.1, 0), "In", "Quad", 0.5, true)
+        task.wait(0.5)
+        NotifFrame:Destroy()
+    end)
+end
+
+ShowNotification()
+
 local MainFrame = Instance.new("Frame", sgui)
 MainFrame.Size = UDim2.new(0, 350, 0, 500)
 MainFrame.Position = UDim2.new(0.5, -175, 0.5, -250)
@@ -70,7 +114,7 @@ subLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 local BackArrow = Instance.new("TextButton", SubFrame)
 BackArrow.Size = UDim2.new(0, 40, 0, 40)
 BackArrow.Position = UDim2.new(0, 5, 0, 5)
-BackArrow.Text = "â†گ"
+BackArrow.Text = "←"
 BackArrow.TextColor3 = Color3.new(1, 1, 1)
 BackArrow.TextSize = 30
 BackArrow.BackgroundTransparency = 1
@@ -141,7 +185,7 @@ local SearchBar = Instance.new("TextBox", MainFrame)
 SearchBar.Size = UDim2.new(1, -40, 0, 40)
 SearchBar.Position = UDim2.new(0, 20, 0, 90)
 SearchBar.Text = "" 
-SearchBar.PlaceholderText = "ط¹ط±ط¨ظٹ / English" 
+SearchBar.PlaceholderText = "English / عربي" 
 SearchBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 SearchBar.TextColor3 = Color3.new(1, 1, 1)
 SearchBar.Font = Enum.Font.GothamBold
@@ -161,7 +205,7 @@ layout.Padding = UDim.new(0, 10)
 local function PlayButtonEffect(button, gradient)
     gradient.Enabled = false
     button.BackgroundColor3 = Color3.fromRGB(0, 255, 127)
-    button.Text = "âœ…"
+    button.Text = "✅"
     task.delay(1, function()
         button.Text = "Start"
         button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -190,30 +234,35 @@ local function AddMap(data, order)
     btn.MouseButton1Click:Connect(function()
         for _, child in pairs(SubScroll:GetChildren()) do if child:IsA("Frame") then child:Destroy() end end
         SubTitle.Text = data.English
-        local sf = Instance.new("Frame", SubScroll)
-        sf.Size = UDim2.new(1, -10, 0, 65); sf.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-        sf.ZIndex = 11; Instance.new("UICorner", sf)
-        local st = Instance.new("TextLabel", sf)
-        st.Name = "ShineLabel"; st.ZIndex = 12
-        st.Size = UDim2.new(1, -100, 1, 0); st.Position = UDim2.new(0, 15, 0, 0)
-        st.Text = data.English; st.TextColor3 = Color3.new(1, 1, 1); st.BackgroundTransparency = 1; st.Font = Enum.Font.GothamBold; st.TextSize = 16
-        local sLabelGrad = Instance.new("UIGradient", st); sLabelGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)), ColorSequenceKeypoint.new(0.5, Color3.fromRGB(150, 150, 150)), ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1))})
-        local sbtn = Instance.new("TextButton", sf)
-        sbtn.Size = UDim2.new(0, 80, 0, 35); sbtn.Position = UDim2.new(1, -90, 0.5, -17)
-        sbtn.Text = "Start"; sbtn.Font = Enum.Font.GothamBold; sbtn.ZIndex = 12; sbtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255); Instance.new("UICorner", sbtn)
-        local sGrad = Instance.new("UIGradient", sbtn); sGrad.Color = titleGrad.Color
         
-        sbtn.MouseButton1Click:Connect(function()
-            if data.Scripts and #data.Scripts > 0 then
-                local scr = data.Scripts[1]
+        for _, scr in ipairs(data.Scripts) do
+            local sf = Instance.new("Frame", SubScroll)
+            sf.Size = UDim2.new(1, -10, 0, 65); sf.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            sf.ZIndex = 11; Instance.new("UICorner", sf)
+            
+            local st = Instance.new("TextLabel", sf)
+            st.Name = "ShineLabel"; st.ZIndex = 12
+            st.Size = UDim2.new(1, -100, 1, 0); st.Position = UDim2.new(0, 15, 0, 0)
+            st.Text = data.English; st.TextColor3 = Color3.new(1, 1, 1); st.BackgroundTransparency = 1; st.Font = Enum.Font.GothamBold; st.TextSize = 16
+            
+            local sLabelGrad = Instance.new("UIGradient", st)
+            sLabelGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)), ColorSequenceKeypoint.new(0.5, Color3.fromRGB(150, 150, 150)), ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1))})
+            
+            local sbtn = Instance.new("TextButton", sf)
+            sbtn.Size = UDim2.new(0, 80, 0, 35); sbtn.Position = UDim2.new(1, -90, 0.5, -17)
+            sbtn.Text = "Start"; sbtn.Font = Enum.Font.GothamBold; sbtn.ZIndex = 12; sbtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255); Instance.new("UICorner", sbtn)
+            
+            local sGrad = Instance.new("UIGradient", sbtn); sGrad.Color = titleGrad.Color
+            
+            sbtn.MouseButton1Click:Connect(function()
                 task.spawn(function()
                     pcall(function() 
                         loadstring(game:HttpGet(scr.Link, true))() 
                     end)
                 end)
-            end
-            PlayButtonEffect(sbtn, sGrad)
-        end)
+                PlayButtonEffect(sbtn, sGrad)
+            end)
+        end
         SubFrame.Visible = true
     end)
 end
@@ -222,7 +271,7 @@ for i, data in ipairs(MyMaps) do AddMap(data, i) end
 
 local ComingSoon = Instance.new("TextLabel", Scroll)
 ComingSoon.Size = UDim2.new(1, 0, 0, 40)
-ComingSoon.Text = "ظ‚ط±ظٹط¨ط§/by and by"
+ComingSoon.Text = "قريباً Coming Soon"
 ComingSoon.TextColor3 = Color3.fromRGB(150, 150, 150)
 ComingSoon.Font = Enum.Font.GothamBold
 ComingSoon.TextSize = 14
@@ -250,7 +299,7 @@ CloseBtn.Size = UDim2.new(0, 30, 0, 30); CloseBtn.Position = UDim2.new(1, -35, 0
 CloseBtn.MouseButton1Click:Connect(function() MainFrame.Visible = false; OpenBtn.Visible = true; SubFrame.Visible = false end)
 
 local function smartNormalize(txt)
-    txt = txt:lower():gsub("[ط£ط¥ط¢]", "ط§"):gsub("ط©", "ظ‡"):gsub("ظ‰", "ظٹ"):gsub("^ط§ظ„", ""):gsub("%sط§ظ„", " ")
+    txt = txt:lower():gsub("[أإآ]", "ا"):gsub("ة", "ه"):gsub("ى", "ي"):gsub("^ال", ""):gsub("%sال", " ")
     return txt:match("^%s*(.-)%s*$")
 end
 SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
