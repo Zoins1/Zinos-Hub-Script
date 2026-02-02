@@ -253,6 +253,7 @@ local MapIDs = {
     ["فعاليات الرسم للعرب"] = 109425102643289
 }
 
+-- تم تعديل الترتيب هنا: ماب سرقة أصبح الثاني
 local MyMaps = {
     {
         English = "All Maps كل مابات", 
@@ -265,11 +266,11 @@ local MyMaps = {
             {Name = "Smart aiming 2 / ايم بوت 2", Link = "https://raw.githubusercontent.com/Joshingtonn123/JoshScript/refs/heads/main/SyrexhubSniperOrDie"}
         }
     },
+    {English = "Steal a Brainrot", Arabic = "ماب سرقة", Keywords = "سرقة", Scripts = {{Link = "https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua"}}},
     {English = "99 Nights", Arabic = "99 ليلة", Keywords = "ليله ليلة 99ليلة 99ليله", Scripts = {{Link = "https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua"}}},
     {English = "Escape Tsunami For Brainrots!", Arabic = "هروب من التسونامي", Keywords = "تسونامي تسوناني هروب من التسونامي brainrots برين روت", Scripts = {{Link = "https://raw.githubusercontent.com/gumanba/Scripts/main/EscapeTsunamiForBrainrots"}}},
     {English = "MM2", Arabic = "جريمة قتل غامضة", Keywords = "mm2 مم مم2 م م 2 ممردر", Scripts = {{Link = "https://raw.githubusercontent.com/Joystickplays/psychic-octo-invention/main/source/yarhm/1.19/yarhm.lua"}}},
     {English = "BROOKHAVEN", Arabic = "بروخافن", Keywords = "بروخافن بيوت ماب البيوت ماب بيوت", Scripts = {{Name = "Script 1", CustomAction = LoadGoldEdition}, {Name = "Script 2", Link = "https://rawscripts.net/raw/Brookhaven-RP-Rael-Hub-58126"}}},
-    {English = "Steal a Brainrot", Arabic = "ماب سرقة", Keywords = "سرقة", Scripts = {{Link = "https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua"}}},
     {English = "Blox Fruits", Arabic = "بلوكس فروتس", Keywords = "بلوكس", Scripts = {{Link = "https://raw.githubusercontent.com/REDZHUB/Blox_Fruits/main/main.lua"}}},
     {English = "فعاليات الرسم للعرب", Arabic = "فعاليات الرسم للعرب", Keywords = "رسم", Scripts = {{Link = "https://rawscripts.net/raw/Universal-Script-HD-copying-LOSKY-59113"}}}
 }
@@ -307,7 +308,6 @@ local TitleLabel = Instance.new("TextLabel", MainFrame)
 TitleLabel.Size = UDim2.new(1, 0, 0, 55); TitleLabel.Text = "Zoins Hub"; TitleLabel.TextColor3 = Color3.new(1, 1, 1); TitleLabel.Font = Enum.Font.GothamBlack; TitleLabel.TextSize = 32; TitleLabel.BackgroundTransparency = 1
 local titleGrad = Instance.new("UIGradient", TitleLabel); titleGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(218, 165, 32)), ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 250, 240)), ColorSequenceKeypoint.new(1, Color3.fromRGB(218, 165, 32))})
 
--- التعديل هنا: شريط البحث بدون كلمة TextBox وبنص English/عربي
 local SearchBar = Instance.new("TextBox", MainFrame)
 SearchBar.Size = UDim2.new(1, -40, 0, 40); SearchBar.Position = UDim2.new(0, 20, 0, 75); 
 SearchBar.PlaceholderText = "English/عربي"
@@ -380,4 +380,3 @@ SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
     ComingSoon.Visible = (input == "")
     for _, item in ipairs(MapFrames) do item.frame.Visible = (input == "" or item.smartTags:find(input, 1, true)) end
 end)
-
