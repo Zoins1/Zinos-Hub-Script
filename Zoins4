@@ -7,6 +7,50 @@ local IsPC = UIS.KeyboardEnabled and UIS.MouseEnabled
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 
+-- ===================================
+-- نظام الإشعارات المخصص (ذهبي وأسود)
+-- ===================================
+local function ShowNotification(text)
+    local NotifyGui = game:GetService("CoreGui"):FindFirstChild("ZoinsNotification")
+    if not NotifyGui then
+        NotifyGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+        NotifyGui.Name = "ZoinsNotification"
+        NotifyGui.DisplayOrder = 999
+    end
+
+    local NotifyFrame = Instance.new("Frame", NotifyGui)
+    NotifyFrame.Size = UDim2.new(0, 250, 0, 60)
+    NotifyFrame.Position = UDim2.new(1, 10, 0, 20) -- تبدأ خارج الشاشة من اليمين
+    NotifyFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+    NotifyFrame.BorderSizePixel = 0
+    
+    local Corner = Instance.new("UICorner", NotifyFrame)
+    Corner.CornerRadius = UDim.new(0, 10)
+    
+    local Stroke = Instance.new("UIStroke", NotifyFrame)
+    Stroke.Thickness = 2
+    Stroke.Color = Color3.fromRGB(218, 165, 32) -- لون ذهبي
+    
+    local Label = Instance.new("TextLabel", NotifyFrame)
+    Label.Size = UDim2.new(1, -10, 1, -10)
+    Label.Position = UDim2.new(0, 5, 0, 5)
+    Label.BackgroundTransparency = 1
+    Label.Text = text
+    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Label.TextSize = 14
+    Label.Font = Enum.Font.GothamBold
+    Label.TextWrapped = true
+
+    -- حركة الظهور (Animation)
+    NotifyFrame:TweenPosition(UDim2.new(1, -260, 0, 20), "Out", "Back", 0.5, true)
+    
+    task.delay(4, function()
+        NotifyFrame:TweenPosition(UDim2.new(1, 10, 0, 20), "In", "Back", 0.5, true)
+        task.wait(0.5)
+        NotifyFrame:Destroy()
+    end)
+end
+
 -- ===============================
 -- Anti Lag / Delay Protection
 -- ===============================
@@ -361,6 +405,9 @@ function AddMap(data)
             local sG = Instance.new("UIGradient", sbtn); sG.Color = ColorSequence.new(Color3.fromRGB(218, 165, 32), Color3.fromRGB(255, 250, 240))
             
             sbtn.MouseButton1Click:Connect(function()
+                -- [[ استدعاء الإشعار المخصص ذهبي وأسود ]] --
+                ShowNotification("Please wait a few seconds for it to start\nانتظر ثواني حتى يشتغل")
+
                 if scr.CustomAction then scr.CustomAction()
                 else AntiLagWrap(function() loadstring(game:HttpGet(scr.Link, true))() end) end
                 sbtn.Text = "Done ✓"; sG.Color = ColorSequence.new(Color3.fromRGB(50, 255, 50), Color3.fromRGB(200, 255, 200))
