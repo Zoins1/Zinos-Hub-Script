@@ -129,7 +129,7 @@ local function LoadGoldEdition()
     MiniBtn.Name = "MiniBtn"
     MiniBtn.Parent = ScreenGui
     MiniBtn.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
-    MiniBtn.Position = UDim2.new(0.9, -10, 0.1, 0) -- دائرة Z مرتفعة
+    MiniBtn.Position = UDim2.new(0.9, -10, 0.1, 0) 
     MiniBtn.Size = UDim2.new(0, 60, 0, 60)
     MiniBtn.Visible = false
     MiniBtn.Active = true
@@ -278,7 +278,7 @@ local MyMaps = {
             {Name = "Script 2", Link = "https://rawscripts.net/raw/Brookhaven-RP-Rael-Hub-58126"}
         }
     },
-    {English = "Blox Fruits", Arabic = "بلوكس فروتس", Keywords = "بلوكس", Scripts = {{Link = "https://raw.githubusercontent.com/REDZHUB/Blox_Fruits/main/main.lua"}}},
+    {English = "Blox Fruits", Arabic = "بلوكس فروتس", Keywords = "بلوكس", Scripts = {{Link = "https://rawscripts.net/raw/Universal-Script-Redz-Hub-Control-Rework-Auto-Farm-Dungeons-etc-82673"}}},
     {English = "فعاليات الرسم للعرب", Arabic = "فعاليات الرسم للعرب", Keywords = "رسم", Scripts = {{Link = "https://rawscripts.net/raw/Universal-Script-HD-copying-LOSKY-59113"}}}
 }
 
