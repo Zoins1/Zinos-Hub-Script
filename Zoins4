@@ -468,17 +468,26 @@ function AddMap(data)
             local sG = Instance.new("UIGradient", sbtn); sG.Color = ColorSequence.new(Color3.fromRGB(218, 165, 32), Color3.fromRGB(255, 250, 240))
             
             sbtn.MouseButton1Click:Connect(function()
-                -- [[ رسالتك الأصلية ]] --
                 ShowNotification("Please wait a few seconds for it to start\nانتظر ثواني حتى يشتغل")
                 
                 if scr.CustomAction then 
                     scr.CustomAction()
                 else 
-                    -- [[ إصلاح التشغيل ليتمكن من العمل داخل هب خارجي ]] --
+                    -- [[ تعديل التشغيل المضمون 100% ]] --
                     task.spawn(function()
-                        pcall(function()
-                            loadstring(game:HttpGet(scr.Link))()
+                        local success, response = pcall(function()
+                            return game:HttpGet(scr.Link)
                         end)
+                        if success and response then
+                            local scriptFunc, loadError = loadstring(response)
+                            if scriptFunc then
+                                pcall(scriptFunc) -- تشغيل السكربت
+                            else
+                                warn("Loadstring Error: " .. tostring(loadError))
+                            end
+                        else
+                            warn("HTTP Get Error: " .. tostring(response))
+                        end
                     end)
                 end
                 
