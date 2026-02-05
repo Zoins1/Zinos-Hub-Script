@@ -370,7 +370,11 @@ local function FindCurrentMapData()
     local success, info = pcall(function() return MarketplaceService:GetProductInfo(game.PlaceId) end)
     if success and info then
         local gameName = info.Name:lower()
-        if gameName:find("steal a brainrot") or gameName:find("سرقة") then
+        if gameName:find("tsunami") or gameName:find("تسونامي") or gameName:find("brainrots") then
+            for _, data in ipairs(MyMaps) do 
+                if data.English == "Escape Tsunami For Brainrots!" then return data end 
+            end
+        elseif gameName:find("steal a brainrot") or gameName:find("سرقة") then
             for _, data in ipairs(MyMaps) do if data.English == "Steal a Brainrot" then return data end end
         end
     end
@@ -380,6 +384,7 @@ end
 ActiveMapData = FindCurrentMapData()
 local allMaps = MyMaps[1]
 
+-- ترتيب القائمة (بدون رسائل إشعار)
 if ActiveMapData then
     table.insert(SortedMaps, ActiveMapData)
     SaveLastMap(ActiveMapData.English)
