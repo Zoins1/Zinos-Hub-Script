@@ -1,4 +1,4 @@
--- -- [[ Zoins Hub - النسخة المصلحة النهائية المضمونة ]] --
+-- -- [[ Zoins Hub - النسخة الكاملة والمدمجة مع سكربت 99 ليلة ]] --
 
 local UserInputService = game:GetService("UserInputService")
 local UIS = UserInputService
@@ -293,8 +293,8 @@ local MyMaps = {
             {Name = "Smart aiming 2 / ايم بوت 2", Link = "https://raw.githubusercontent.com/Joshingtonn123/JoshScript/refs/heads/main/SyrexhubSniperOrDie"}
         }
     },
-    {English = "Steal a Brainrot", Arabic = "ماب سرقة", Keywords = "سرقة سرقه brainrot", Scripts = {{Link = "https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua"}}},
     {English = "99 Nights", Arabic = "99 ليلة", Keywords = "ليله ليلة 99ليلة 99ليله", Scripts = {{Link = "https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua"}}},
+    {English = "Steal a Brainrot", Arabic = "ماب سرقة", Keywords = "سرقة سرقه brainrot", Scripts = {{Link = "https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua"}}},
     {English = "Escape Tsunami For Brainrots!", Arabic = "هروب من التسونامي", Keywords = "تسونامي تسوناني هروب من التسونامي brainrots برين روت", Scripts = {{Link = "https://raw.githubusercontent.com/gumanba/Scripts/main/EscapeTsunamiForBrainrots"}}},
     {English = "MM2", Arabic = "جريمة قتل غامضة", Keywords = "mm2 مم مم2 م م 2 ممردر", Scripts = {{Link = "https://raw.githubusercontent.com/Joystickplays/psychic-octo-invention/main/source/yarhm/1.19/yarhm.lua"}}},
     {
@@ -311,80 +311,50 @@ local MyMaps = {
 }
 
 -- ==========================================================
--- [[ ميزة الذاكرة الذكية المحدثة ]] --
+-- الذاكرة الذكية
 -- ==========================================================
 local FileName = "ZoinsLastMap.txt"
-
-local function SaveLastMap(mapName)
-    if writefile then pcall(function() writefile(FileName, mapName) end) end
-end
-
-local function GetSavedMap()
-    if isfile and isfile(FileName) then return readfile(FileName) end
-    return nil
-end
+local function SaveLastMap(mapName) if writefile then pcall(function() writefile(FileName, mapName) end) end end
+local function GetSavedMap() if isfile and isfile(FileName) then return readfile(FileName) end return nil end
 
 local SortedMaps = {}
 local CurrentPlaceId = game.PlaceId
 local SavedMapName = GetSavedMap()
-local ActiveMapData = nil
 
 local function FindCurrentMapData()
-    for _, data in ipairs(MyMaps) do
-        if MapIDs[data.English] == CurrentPlaceId then return data end
-    end
-    
-    local MarketplaceService = game:GetService("MarketplaceService")
-    local success, info = pcall(function() return MarketplaceService:GetProductInfo(game.PlaceId) end)
-    if success and info then
-        local gameName = info.Name:lower()
-        if gameName:find("99 nights") or gameName:find("99 ليلة") then
-            for _, data in ipairs(MyMaps) do if data.English == "99 Nights" then return data end end
-        elseif gameName:find("steal a brainrot") or gameName:find("سرقة") then
-            for _, data in ipairs(MyMaps) do if data.English == "Steal a Brainrot" then return data end end
-        end
-    end
+    for _, data in ipairs(MyMaps) do if MapIDs[data.English] == CurrentPlaceId then return data end end
     return nil
 end
 
-ActiveMapData = FindCurrentMapData()
+local ActiveMapData = FindCurrentMapData()
 local allMaps = MyMaps[1]
 
 if ActiveMapData then
     table.insert(SortedMaps, ActiveMapData)
     SaveLastMap(ActiveMapData.English)
-    if ActiveMapData.English ~= allMaps.English then
-        table.insert(SortedMaps, allMaps)
-    end
+    if ActiveMapData.English ~= allMaps.English then table.insert(SortedMaps, allMaps) end
 else
     table.insert(SortedMaps, allMaps)
-    if SavedMapName and SavedMapName ~= allMaps.English then
-        for _, data in ipairs(MyMaps) do
-            if data.English == SavedMapName then
-                table.insert(SortedMaps, data)
-                break
-            end
-        end
+    if SavedMapName then
+        for _, d in ipairs(MyMaps) do if d.English == SavedMapName then table.insert(SortedMaps, d) break end end
     end
 end
 
 for _, data in ipairs(MyMaps) do
-    local alreadyAdded = false
-    for _, added in ipairs(SortedMaps) do
-        if added.English == data.English then alreadyAdded = true break end
-    end
-    if not alreadyAdded then table.insert(SortedMaps, data) end
+    local added = false
+    for _, v in ipairs(SortedMaps) do if v.English == data.English then added = true break end end
+    if not added then table.insert(SortedMaps, data) end
 end
 
 -- ==========================================================
-
+-- إنشاء الواجهة (GUI)
+-- ==========================================================
 local sgui = Instance.new("ScreenGui", game:GetService("CoreGui"))
 sgui.DisplayOrder = 10 
 
 local MainFrame = Instance.new("Frame", sgui)
 if IsPC then MainFrame.Size = UDim2.new(0, 380, 0, 490); MainFrame.Position = UDim2.new(0.5, -190, 0.5, -245)
-elseif IsMobile then MainFrame.Size = UDim2.new(0, 320, 0, 490); MainFrame.Position = UDim2.new(0.5, -160, 0.5, -245)
-else MainFrame.Size = UDim2.new(0, 350, 0, 490); MainFrame.Position = UDim2.new(0.5, -175, 0.5, -245) end
+else MainFrame.Size = UDim2.new(0, 320, 0, 490); MainFrame.Position = UDim2.new(0.5, -160, 0.5, -245) end
 MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10); MainFrame.BorderSizePixel = 0; MainFrame.Active = true; Instance.new("UICorner", MainFrame)
 MakeDraggable(MainFrame)
 
@@ -395,7 +365,7 @@ local SubTitle = Instance.new("TextLabel", SubFrame)
 SubTitle.Size = UDim2.new(1, 0, 0, 60); SubTitle.BackgroundTransparency = 1; SubTitle.Font = Enum.Font.GothamBlack; SubTitle.TextSize = 22; SubTitle.TextColor3 = Color3.new(1, 1, 1); SubTitle.ZIndex = 21
 
 local SubScroll = Instance.new("ScrollingFrame", SubFrame)
-SubScroll.Size = UDim2.new(1, -20, 1, -100); SubScroll.Position = UDim2.new(0, 10, 0, 70); SubScroll.BackgroundTransparency = 1; SubScroll.ZIndex = 21; SubScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y; SubScroll.CanvasSize = UDim2.new(0,0,0,20)
+SubScroll.Size = UDim2.new(1, -20, 1, -100); SubScroll.Position = UDim2.new(0, 10, 0, 70); SubScroll.BackgroundTransparency = 1; SubScroll.ZIndex = 21; SubScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 local subLayout = Instance.new("UIListLayout", SubScroll); subLayout.Padding = UDim.new(0, 10); subLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
 local BackArrow = Instance.new("TextButton", SubFrame)
@@ -406,106 +376,40 @@ local TitleLabel = Instance.new("TextLabel", MainFrame)
 TitleLabel.Size = UDim2.new(1, 0, 0, 55); TitleLabel.Text = "Zoins Hub"; TitleLabel.TextColor3 = Color3.new(1, 1, 1); TitleLabel.Font = Enum.Font.GothamBlack; TitleLabel.TextSize = 32; TitleLabel.BackgroundTransparency = 1
 local titleGrad = Instance.new("UIGradient", TitleLabel); titleGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(218, 165, 32)), ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 250, 240)), ColorSequenceKeypoint.new(1, Color3.fromRGB(218, 165, 32))})
 
-local SearchBar = Instance.new("TextBox", MainFrame)
-SearchBar.Size = UDim2.new(1, -40, 0, 40); SearchBar.Position = UDim2.new(0, 20, 0, 75); 
-SearchBar.PlaceholderText = "English/عربي"
-SearchBar.Text = "" 
-SearchBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25); SearchBar.TextColor3 = Color3.new(1, 1, 1); SearchBar.Font = Enum.Font.GothamBold; SearchBar.TextSize = 16; Instance.new("UICorner", SearchBar)
-
 local Scroll = Instance.new("ScrollingFrame", MainFrame)
-Scroll.Size = UDim2.new(1, -20, 1, -160); Scroll.Position = UDim2.new(0, 10, 0, 145); Scroll.BackgroundTransparency = 1; Scroll.ScrollBarThickness = 2; Scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y; Scroll.CanvasSize = UDim2.new(0,0,0,60)
+Scroll.Size = UDim2.new(1, -20, 1, -100); Scroll.Position = UDim2.new(0, 10, 0, 80); Scroll.BackgroundTransparency = 1; Scroll.ScrollBarThickness = 2; Scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 local layout = Instance.new("UIListLayout", Scroll); layout.Padding = UDim.new(0, 10)
-local UIPadding = Instance.new("UIPadding", Scroll); UIPadding.PaddingTop = UDim.new(0, 8)
-
-local OpenBtn = Instance.new("TextButton", sgui)
-OpenBtn.Size = IsMobile and UDim2.new(0, 90, 0, 90) or UDim2.new(0, 80, 0, 80); OpenBtn.Position = UDim2.new(0.9, -75, 0.5, -40); OpenBtn.BackgroundColor3 = Color3.new(0,0,0); OpenBtn.Text = "Zoins"; OpenBtn.Font = Enum.Font.GothamBlack; OpenBtn.TextSize = 18; OpenBtn.TextColor3 = Color3.new(1, 1, 1); OpenBtn.Visible = false; Instance.new("UICorner", OpenBtn).CornerRadius = UDim.new(1, 0)
-
-local wasBtnDragged = MakeDraggable(OpenBtn)
-OpenBtn.MouseButton1Click:Connect(function() if not wasBtnDragged() then MainFrame.Visible = true; OpenBtn.Visible = false end end)
-
-local btnStroke = Instance.new("UIStroke", OpenBtn); btnStroke.Thickness = 3; local strokeGrad = Instance.new("UIGradient", btnStroke); strokeGrad.Color = titleGrad.Color; local btnTextGrad = Instance.new("UIGradient", OpenBtn); btnTextGrad.Color = titleGrad.Color
-
-task.spawn(function()
-    while true do
-        TweenService:Create(titleGrad, TweenInfo.new(2), {Offset = Vector2.new(1, 0)}):Play()
-        TweenService:Create(btnTextGrad, TweenInfo.new(2), {Offset = Vector2.new(1, 0)}):Play()
-        TweenService:Create(strokeGrad, TweenInfo.new(2, Enum.EasingStyle.Linear), {Rotation = 360}):Play()
-        task.wait(2); titleGrad.Offset = Vector2.new(-1, 0); btnTextGrad.Offset = Vector2.new(-1, 0); strokeGrad.Rotation = 0
-    end
-end)
-
-local function CleanText(str) if not str then return "" end str = str:lower():gsub("ة", "ه"):gsub("ى", "ي") return str end
 
 function AddMap(data)
     local f = Instance.new("Frame", Scroll); f.Size = UDim2.new(1, -10, 0, 65); f.BackgroundColor3 = Color3.fromRGB(20, 20, 20); Instance.new("UICorner", f)
-    local smartTags = CleanText(data.English .. " " .. (data.Arabic or "") .. " " .. (data.Keywords or ""))
     local t = Instance.new("TextLabel", f); t.Size = UDim2.new(1, -100, 1, 0); t.Position = UDim2.new(0, 15, 0, 0); t.Text = data.English; t.TextColor3 = Color3.new(1, 1, 1); t.BackgroundTransparency = 1; t.Font = Enum.Font.GothamBold; t.TextSize = 16
     local btn = Instance.new("TextButton", f); btn.Size = UDim2.new(0, 80, 0, 35); btn.Position = UDim2.new(1, -90, 0.5, -17); btn.Text = "Start"; btn.Font = Enum.Font.GothamBold; Instance.new("UICorner", btn)
     Instance.new("UIGradient", btn).Color = titleGrad.Color
 
-    if ActiveMapData and data.English == ActiveMapData.English then
-        f.BackgroundColor3 = Color3.fromRGB(30, 30, 20)
-        local s = Instance.new("UIStroke", f)
-        s.Color = Color3.fromRGB(218, 165, 32); s.Thickness = 1.5
-    end
-
     btn.MouseButton1Click:Connect(function()
-        for _, child in pairs(SubScroll:GetChildren()) do if child:IsA("Frame") then child:Destroy() end end
+        for _, c in pairs(SubScroll:GetChildren()) do if c:IsA("Frame") then c:Destroy() end end
         SubTitle.Text = data.English
         for _, scr in ipairs(data.Scripts) do
             local sf = Instance.new("Frame", SubScroll); sf.Size = UDim2.new(1, -10, 0, 65); sf.BackgroundColor3 = Color3.fromRGB(20, 20, 20); sf.ZIndex = 21; Instance.new("UICorner", sf)
-            local st = Instance.new("TextLabel", sf); st.Size = UDim2.new(1, -100, 1, 0); st.Position = UDim2.new(0, 15, 0, 0); st.Text = (scr.Name or data.English); st.TextColor3 = Color3.new(1, 1, 1); st.BackgroundTransparency = 1; st.Font = Enum.Font.GothamBold; st.TextSize = 16; st.ZIndex = 22
-            local sbtn = Instance.new("TextButton", sf); sbtn.Size = UDim2.new(0, 80, 0, 35); sbtn.Position = UDim2.new(1, -90, 0.5, -17); sbtn.Text = "Start"; sbtn.Font = Enum.Font.GothamBold; sbtn.ZIndex = 22; Instance.new("UICorner", sbtn); sbtn.BackgroundColor3 = Color3.new(1, 1, 1)
-            local sG = Instance.new("UIGradient", sbtn); sG.Color = ColorSequence.new(Color3.fromRGB(218, 165, 32), Color3.fromRGB(255, 250, 240))
+            local sbtn = Instance.new("TextButton", sf); sbtn.Size = UDim2.new(0, 80, 0, 35); sbtn.Position = UDim2.new(1, -90, 0.5, -17); sbtn.Text = "Start"; sbtn.Font = Enum.Font.GothamBold; sbtn.ZIndex = 22; Instance.new("UICorner", sbtn)
             
             sbtn.MouseButton1Click:Connect(function()
-                ShowNotification("Executing Script...\nجاري تشغيل السكربت")
-                
-                if scr.CustomAction then 
-                    scr.CustomAction()
-                else 
-                    -- [[ تحديث نظام التشغيل الجذري ]] --
+                ShowNotification("Loading Script...\nانتظر ثواني")
+                if scr.CustomAction then scr.CustomAction()
+                else
                     task.spawn(function()
-                        local Success, ScriptContent = pcall(game.HttpGet, game, scr.Link)
-                        if Success and ScriptContent then
-                            local LoadedFunc, LoadError = loadstring(ScriptContent)
-                            if LoadedFunc then
-                                local RunSuccess, RunError = pcall(LoadedFunc)
-                                if not RunSuccess then
-                                    ShowNotification("Script error after loading!\nخطأ في السكربت بعد التحميل")
-                                    warn("Script Run Error:", RunError)
-                                end
-                            else
-                                ShowNotification("Executor incompatible with this script!\nالمشغل غير مدعوم لهذا السكربت")
-                                warn("Script Load Error:", LoadError)
-                            end
-                        else
-                            ShowNotification("Failed to download script!\nفشل تحميل السكربت من الرابط")
-                        end
+                        local res = game:HttpGet(scr.Link)
+                        loadstring(res)() -- الطريقة المباشرة لضمان التشغيل
                     end)
                 end
-                
-                sbtn.Text = "Done ✓"; sG.Color = ColorSequence.new(Color3.fromRGB(50, 255, 50), Color3.fromRGB(200, 255, 200))
-                task.delay(2, function() sbtn.Text = "Start"; sG.Color = ColorSequence.new(Color3.fromRGB(218, 165, 32), Color3.fromRGB(255, 250, 240)) end)
             end)
         end
         SubFrame.Visible = true
     end)
-    return {frame = f, smartTags = smartTags}
 end
 
-local MapFrames = {}
-for _, data in ipairs(SortedMaps) do table.insert(MapFrames, AddMap(data)) end
-
-local ComingSoon = Instance.new("TextLabel", Scroll)
-ComingSoon.Size = UDim2.new(1, 0, 0, 50); ComingSoon.Text = "قريباً / The update is coming soon"; ComingSoon.TextColor3 = Color3.fromRGB(150, 150, 150); ComingSoon.Font = Enum.Font.GothamBold; ComingSoon.TextSize = 14; ComingSoon.BackgroundTransparency = 1
+for _, data in ipairs(SortedMaps) do AddMap(data) end
 
 local CloseBtn = Instance.new("TextButton", MainFrame)
-CloseBtn.Size = UDim2.new(0, 28, 0, 28); CloseBtn.Position = UDim2.new(1, -35, 0, 12); CloseBtn.Text = "X"; CloseBtn.TextColor3 = Color3.new(1, 0, 0); CloseBtn.BackgroundTransparency = 1; CloseBtn.ZIndex = 50
-CloseBtn.MouseButton1Click:Connect(function() MainFrame.Visible = false; OpenBtn.Visible = true; SubFrame.Visible = false end)
-
-SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
-    local input = CleanText(SearchBar.Text)
-    ComingSoon.Visible = (input == "")
-    for _, item in ipairs(MapFrames) do item.frame.Visible = (input == "" or item.smartTags:find(input, 1, true)) end
-end)
+CloseBtn.Size = UDim2.new(0, 30, 0, 30); CloseBtn.Position = UDim2.new(1, -35, 0, 12); CloseBtn.Text = "X"; CloseBtn.TextColor3 = Color3.new(1, 0, 0); CloseBtn.BackgroundTransparency = 1
+CloseBtn.MouseButton1Click:Connect(function() sgui:Destroy() end)
