@@ -1,4 +1,4 @@
--- -- [[ Zoins Hub - النسخة المصلحة مع ميزة الترتيب الذكي للمابات غير المعروفة ]] --
+-- -- [[ Zoins Hub - النسخة المصلحة والنهائية ]] --
 
 local UserInputService = game:GetService("UserInputService")
 local UIS = UserInputService
@@ -335,9 +335,12 @@ local MyMaps = {
     {English = "فعاليات الرسم للعرب", Arabic = "فعاليات الرسم للعرب", Keywords = "رسم", Scripts = {{Link = "https://rawscripts.net/raw/Universal-Script-HD-copying-LOSKY-59113"}}}
 }
 
+-- تشغيل التحميل المسبق مع استثناء سكربت 99 Nights
 for _, data in ipairs(MyMaps) do
     for _, scr in ipairs(data.Scripts) do
-        if scr.Link then PreloadScript(scr.Link) end
+        if scr.Link and scr.Link ~= "https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua" then
+            PreloadScript(scr.Link)
+        end
     end
 end
 
@@ -491,49 +494,37 @@ function AddMap(data)
             
             sbtn.MouseButton1Click:Connect(function()
                 ShowNotification("Please wait a few seconds for it to start\nانتظر ثواني حتى يشتغل")
-
+                
                 -- [[ تشغيل سكربت 99 Nights مباشرة ]]
                 if scr.Link == "https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua" then
                     task.spawn(function()
-                        -- تنظيف المتغيرات القديمة لمنع أي تعارض
                         pcall(function()
                             getgenv().Loaded = nil
                             shared.Nights = nil
                             shared.VapeVoidware = nil
                         end)
 
-                        -- تحميل السكربت مباشرة من الرابط
                         local success, code = pcall(function()
                             return game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua", true)
                         end)
 
                         if success and code then
-                            -- تنفيذ السكربت
                             loadstring(code)()
                         else
                             ShowNotification("Failed to load 99 Nights script!")
                         end
                     end)
-
                 elseif scr.CustomAction then 
-                    -- تشغيل أي دالة مخصصة للسكربت (مثل الـ Gold Edition)
                     scr.CustomAction()
                 else 
-                    -- تشغيل أي سكربت عادي باستخدام AntiLag
                     AntiLagWrap(function() 
                         local code = CachedScripts[scr.Link] or game:HttpGet(scr.Link, true)
                         loadstring(code)() 
                     end) 
                 end
 
-                -- تغيير حالة الزر مؤقتًا للتأكيد
-                sbtn.Text = "Done ✓"
-                local currentSG = sbtn:FindFirstChildOfClass("UIGradient")
-                if currentSG then currentSG.Color = ColorSequence.new(Color3.fromRGB(50, 255, 50), Color3.fromRGB(200, 255, 200)) end
-                task.delay(2, function()
-                    sbtn.Text = "Start"
-                    if currentSG then currentSG.Color = ColorSequence.new(Color3.fromRGB(218, 165, 32), Color3.fromRGB(255, 250, 240)) end
-                end)
+                sbtn.Text = "Done ✓"; sG.Color = ColorSequence.new(Color3.fromRGB(50, 255, 50), Color3.fromRGB(200, 255, 200))
+                task.delay(2, function() sbtn.Text = "Start"; sG.Color = ColorSequence.new(Color3.fromRGB(218, 165, 32), Color3.fromRGB(255, 250, 240)) end)
             end)
         end
         SubFrame.Visible = true
