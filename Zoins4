@@ -474,17 +474,11 @@ function AddMap(data)
                 if scr.CustomAction then 
                     scr.CustomAction()
                 else 
-                    -- [[ إصلاح التشغيل ]] --
+                    -- [[ إصلاح التشغيل ليتمكن من العمل داخل هب خارجي ]] --
                     task.spawn(function()
-                        local success, code = pcall(function() return game:HttpGet(scr.Link) end)
-                        if success then
-                            local func, err = loadstring(code)
-                            if func then
-                                AntiLagWrap(func)
-                            else
-                                warn("Error in script:", err)
-                            end
-                        end
+                        pcall(function()
+                            loadstring(game:HttpGet(scr.Link))()
+                        end)
                     end)
                 end
                 
