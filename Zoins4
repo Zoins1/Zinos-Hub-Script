@@ -1,4 +1,4 @@
--- -- [[ Zoins Hub - النسخة المصلحة النهائية بنفس رسائلك الأصلية ]] --
+-- -- [[ Zoins Hub - النسخة المصلحة النهائية المضمونة ]] --
 
 local UserInputService = game:GetService("UserInputService")
 local UIS = UserInputService
@@ -44,20 +44,11 @@ local function ShowNotification(text)
     NotifyFrame:TweenPosition(UDim2.new(1, -260, 0, 20), "Out", "Back", 0.5, true)
     
     task.delay(4, function()
-        NotifyFrame:TweenPosition(UDim2.new(1, 10, 0, 20), "In", "Back", 0.5, true)
-        task.wait(0.5)
-        NotifyFrame:Destroy()
-    end)
-end
-
--- ===============================
--- Anti Lag / Delay Protection
--- ===============================
-local function AntiLagWrap(func)
-    task.spawn(function()
-        local ok, err = pcall(func)
-        if not ok then warn("Zoins Hub | Script Error:", err) end
-        if collectgarbage then collectgarbage("step", 200) end
+        if NotifyFrame then
+            NotifyFrame:TweenPosition(UDim2.new(1, 10, 0, 20), "In", "Back", 0.5, true)
+            task.wait(0.5)
+            NotifyFrame:Destroy()
+        end
     end)
 end
 
@@ -468,25 +459,28 @@ function AddMap(data)
             local sG = Instance.new("UIGradient", sbtn); sG.Color = ColorSequence.new(Color3.fromRGB(218, 165, 32), Color3.fromRGB(255, 250, 240))
             
             sbtn.MouseButton1Click:Connect(function()
-                ShowNotification("Please wait a few seconds for it to start\nانتظر ثواني حتى يشتغل")
+                ShowNotification("Executing Script...\nجاري تشغيل السكربت")
                 
                 if scr.CustomAction then 
                     scr.CustomAction()
                 else 
-                    -- [[ تعديل التشغيل المضمون 100% ]] --
+                    -- [[ تحديث نظام التشغيل الجذري ]] --
                     task.spawn(function()
-                        local success, response = pcall(function()
-                            return game:HttpGet(scr.Link)
-                        end)
-                        if success and response then
-                            local scriptFunc, loadError = loadstring(response)
-                            if scriptFunc then
-                                pcall(scriptFunc) -- تشغيل السكربت
+                        local Success, ScriptContent = pcall(game.HttpGet, game, scr.Link)
+                        if Success and ScriptContent then
+                            local LoadedFunc, LoadError = loadstring(ScriptContent)
+                            if LoadedFunc then
+                                local RunSuccess, RunError = pcall(LoadedFunc)
+                                if not RunSuccess then
+                                    ShowNotification("Script error after loading!\nخطأ في السكربت بعد التحميل")
+                                    warn("Script Run Error:", RunError)
+                                end
                             else
-                                warn("Loadstring Error: " .. tostring(loadError))
+                                ShowNotification("Executor incompatible with this script!\nالمشغل غير مدعوم لهذا السكربت")
+                                warn("Script Load Error:", LoadError)
                             end
                         else
-                            warn("HTTP Get Error: " .. tostring(response))
+                            ShowNotification("Failed to download script!\nفشل تحميل السكربت من الرابط")
                         end
                     end)
                 end
