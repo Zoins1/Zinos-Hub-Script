@@ -1,4 +1,4 @@
--- -- [[ Zoins Hub - النسخة المصلحة: تم حل مشكلة تشغيل السكربتات ]] --
+-- -- [[ Zoins Hub - النسخة المصلحة النهائية بنفس رسائلك الأصلية ]] --
 
 local UserInputService = game:GetService("UserInputService")
 local UIS = UserInputService
@@ -55,12 +55,9 @@ end
 -- ===============================
 local function AntiLagWrap(func)
     task.spawn(function()
-        RunService.Heartbeat:Wait()
         local ok, err = pcall(func)
         if not ok then warn("Zoins Hub | Script Error:", err) end
-        task.delay(0.2, function()
-            if collectgarbage then collectgarbage("step", 200) end
-        end)
+        if collectgarbage then collectgarbage("step", 200) end
     end)
 end
 
@@ -471,14 +468,26 @@ function AddMap(data)
             local sG = Instance.new("UIGradient", sbtn); sG.Color = ColorSequence.new(Color3.fromRGB(218, 165, 32), Color3.fromRGB(255, 250, 240))
             
             sbtn.MouseButton1Click:Connect(function()
+                -- [[ رسالتك الأصلية ]] --
                 ShowNotification("Please wait a few seconds for it to start\nانتظر ثواني حتى يشتغل")
-                if scr.CustomAction then scr.CustomAction()
+                
+                if scr.CustomAction then 
+                    scr.CustomAction()
                 else 
-                    AntiLagWrap(function() 
-                        -- [[ تم الإصلاح: السكربت الآن يحمل بشكل مباشر وطبيعي من الرابط بدون تخزين ]] --
-                        loadstring(game:HttpGet(scr.Link))() 
-                    end) 
+                    -- [[ إصلاح التشغيل ]] --
+                    task.spawn(function()
+                        local success, code = pcall(function() return game:HttpGet(scr.Link) end)
+                        if success then
+                            local func, err = loadstring(code)
+                            if func then
+                                AntiLagWrap(func)
+                            else
+                                warn("Error in script:", err)
+                            end
+                        end
+                    end)
                 end
+                
                 sbtn.Text = "Done ✓"; sG.Color = ColorSequence.new(Color3.fromRGB(50, 255, 50), Color3.fromRGB(200, 255, 200))
                 task.delay(2, function() sbtn.Text = "Start"; sG.Color = ColorSequence.new(Color3.fromRGB(218, 165, 32), Color3.fromRGB(255, 250, 240)) end)
             end)
