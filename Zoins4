@@ -1,4 +1,4 @@
--- -- [[ Zoins Hub - النسخة المصلحة مع تعديل سكربت 99 Nights ]] --
+-- -- [[ Zoins Hub - النسخة المصلحة مع ميزة الترتيب الذكي للمابات غير المعروفة ]] --
 
 local UserInputService = game:GetService("UserInputService")
 local UIS = UserInputService
@@ -6,6 +6,19 @@ local IsMobile = UIS.TouchEnabled and not UIS.KeyboardEnabled
 local IsPC = UIS.KeyboardEnabled and UIS.MouseEnabled
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
+
+-- ===================================
+-- تقنية التحميل المسبق
+-- ===================================
+local CachedScripts = {}
+local function PreloadScript(url)
+    if not url or url == "" then return end
+    task.spawn(function()
+        pcall(function() 
+            CachedScripts[url] = game:HttpGet(url) 
+        end)
+    end)
+end
 
 -- ===================================
 -- نظام الإشعارات المخصص
@@ -103,6 +116,7 @@ local function LoadGoldEdition()
     local UICorner_Main = Instance.new("UICorner")
     local UIStroke_Main = Instance.new("UIStroke")
     local Title = Instance.new("TextLabel")
+    local UIGradient_Title = Instance.new("UIGradient")
     local ContentFrame = Instance.new("ScrollingFrame")
     local CloseBtnG = Instance.new("TextButton")
     local MiniBtn = Instance.new("TextButton")
@@ -153,8 +167,8 @@ local function LoadGoldEdition()
     Title.Font = Enum.Font.FredokaOne
     Title.TextSize = 40
     Title.BackgroundTransparency = 1
-    local UIGradient_Title = Instance.new("UIGradient", Title)
     UIGradient_Title.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(150, 0, 255))}
+    UIGradient_Title.Parent = Title
 
     ContentFrame.Parent = MainFrameG
     ContentFrame.Size = UDim2.new(1, 0, 1, -80)
@@ -305,22 +319,7 @@ local MyMaps = {
         }
     },
     {English = "Steal a Brainrot", Arabic = "ماب سرقة", Keywords = "سرقة سرقه brainrot", Scripts = {{Link = "https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua"}}},
-    -- [ تعديل ماب 99 Nights ليعمل بالكود الخاص بك ] --
-    {
-        English = "99 Nights", 
-        Arabic = "99 ليلة", 
-        Keywords = "ليله ليلة 99ليلة 99ليله", 
-        Scripts = {{
-            Name = "99 Nights Script",
-            CustomAction = function()
-                task.spawn(function()
-                    repeat task.wait() until game:IsLoaded()
-                    task.wait(8) -- مهم جدا لـ 99 Nights
-                    loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua", true))()
-                end)
-            end
-        }}
-    },
+    {English = "99 Nights", Arabic = "99 ليلة", Keywords = "ليله ليلة 99ليلة 99ليله", Scripts = {{Link = "https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua"}}},
     {English = "Escape Tsunami For Brainrots!", Arabic = "هروب من التسونامي", Keywords = "تسونامي تسوناني هروب من التسونامي brainrots برين روت", Scripts = {{Link = "https://raw.githubusercontent.com/gumanba/Scripts/main/EscapeTsunamiForBrainrots"}}},
     {English = "MM2", Arabic = "جريمة قتل غامضة", Keywords = "mm2 مم مم2 م م 2 ممردر", Scripts = {{Link = "https://raw.githubusercontent.com/Joystickplays/psychic-octo-invention/main/source/yarhm/1.19/yarhm.lua"}}},
     {
@@ -335,6 +334,12 @@ local MyMaps = {
     {English = "Blox Fruits", Arabic = "بلوكس فروتس", Keywords = "بلوكس", Scripts = {{Link = "https://rawscripts.net/raw/Universal-Script-Redz-Hub-Control-Rework-Auto-Farm-Dungeons-etc-82673"}}},
     {English = "فعاليات الرسم للعرب", Arabic = "فعاليات الرسم للعرب", Keywords = "رسم", Scripts = {{Link = "https://rawscripts.net/raw/Universal-Script-HD-copying-LOSKY-59113"}}}
 }
+
+for _, data in ipairs(MyMaps) do
+    for _, scr in ipairs(data.Scripts) do
+        if scr.Link then PreloadScript(scr.Link) end
+    end
+end
 
 -- ==========================================================
 -- [[ ميزة الذاكرة الذكية المحدثة ]] --
@@ -401,6 +406,7 @@ for _, data in ipairs(MyMaps) do
     end
     if not alreadyAdded then table.insert(SortedMaps, data) end
 end
+
 -- ==========================================================
 
 local sgui = Instance.new("ScreenGui", game:GetService("CoreGui"))
@@ -485,13 +491,27 @@ function AddMap(data)
             
             sbtn.MouseButton1Click:Connect(function()
                 ShowNotification("Please wait a few seconds for it to start\nانتظر ثواني حتى يشتغل")
-                if scr.CustomAction then scr.CustomAction()
+                
+                -- [[ التعديل المخصص لماب 99 Nights ]] --
+                if scr.Link == "https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua" then
+                    task.spawn(function()
+                        pcall(function()
+                            getgenv().Loaded = nil
+                            shared.Nights = nil
+                            shared.VapeVoidware = nil
+                        end)
+                        local code = CachedScripts[scr.Link] or game:HttpGet(scr.Link, true)
+                        loadstring(code)()
+                    end)
+                elseif scr.CustomAction then 
+                    scr.CustomAction()
                 else 
                     AntiLagWrap(function() 
-                        local code = game:HttpGet(scr.Link, true)
+                        local code = CachedScripts[scr.Link] or game:HttpGet(scr.Link, true)
                         loadstring(code)() 
                     end) 
                 end
+                
                 sbtn.Text = "Done ✓"; sG.Color = ColorSequence.new(Color3.fromRGB(50, 255, 50), Color3.fromRGB(200, 255, 200))
                 task.delay(2, function() sbtn.Text = "Start"; sG.Color = ColorSequence.new(Color3.fromRGB(218, 165, 32), Color3.fromRGB(255, 250, 240)) end)
             end)
