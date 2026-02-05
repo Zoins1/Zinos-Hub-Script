@@ -1,4 +1,4 @@
--- -- [[ Zoins Hub - النسخة المصلحة بالكامل ]] --
+-- -- [[ Zoins Hub - النسخة الكاملة المصلحة النهائية المدمجة ]] --
 
 local UserInputService = game:GetService("UserInputService")
 local UIS = UserInputService
@@ -8,7 +8,7 @@ local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 
 -- ===================================
--- نظام الإشعارات المخصص (ذهبي وأسود)
+-- نظام الإشعارات المخصص
 -- ===================================
 local function ShowNotification(text)
     local NotifyGui = game:GetService("CoreGui"):FindFirstChild("ZoinsNotification")
@@ -20,7 +20,7 @@ local function ShowNotification(text)
 
     local NotifyFrame = Instance.new("Frame", NotifyGui)
     NotifyFrame.Size = UDim2.new(0, 250, 0, 60)
-    NotifyFrame.Position = UDim2.new(1, 10, 0, 20) -- تبدأ خارج الشاشة من اليمين
+    NotifyFrame.Position = UDim2.new(1, 10, 0, 20) 
     NotifyFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
     NotifyFrame.BorderSizePixel = 0
     
@@ -29,7 +29,7 @@ local function ShowNotification(text)
     
     local Stroke = Instance.new("UIStroke", NotifyFrame)
     Stroke.Thickness = 2
-    Stroke.Color = Color3.fromRGB(218, 165, 32) -- لون ذهبي
+    Stroke.Color = Color3.fromRGB(218, 165, 32) 
     
     local Label = Instance.new("TextLabel", NotifyFrame)
     Label.Size = UDim2.new(1, -10, 1, -10)
@@ -41,27 +41,14 @@ local function ShowNotification(text)
     Label.Font = Enum.Font.GothamBold
     Label.TextWrapped = true
 
-    -- حركة الظهور (Animation)
     NotifyFrame:TweenPosition(UDim2.new(1, -260, 0, 20), "Out", "Back", 0.5, true)
     
     task.delay(4, function()
-        NotifyFrame:TweenPosition(UDim2.new(1, 10, 0, 20), "In", "Back", 0.5, true)
-        task.wait(0.5)
-        NotifyFrame:Destroy()
-    end)
-end
-
--- ===============================
--- Anti Lag / Delay Protection
--- ===============================
-local function AntiLagWrap(func)
-    task.spawn(function()
-        RunService.Heartbeat:Wait()
-        local ok, err = pcall(func)
-        if not ok then warn("Zoins Hub | Script Error:", err) end
-        task.delay(0.2, function()
-            if collectgarbage then collectgarbage("step", 200) end
-        end)
+        if NotifyFrame then
+            NotifyFrame:TweenPosition(UDim2.new(1, 10, 0, 20), "In", "Back", 0.5, true)
+            task.wait(0.5)
+            NotifyFrame:Destroy()
+        end
     end)
 end
 
@@ -107,28 +94,241 @@ local function LoadGoldEdition()
     local UIGradient_Title = Instance.new("UIGradient")
     local ContentFrame = Instance.new("ScrollingFrame")
     local CloseBtnG = Instance.new("TextButton")
-    local MiniBtn = Instance.new("TextButton")
-    local MiniCorner = Instance.new("UICorner")
-    local MiniStroke = Instance.new("UIStroke")
-    local MiniGradient = Instance.new("UIGradient")
-    local MiniLabel = Instance.new("TextLabel")
-
+    
     ScreenGui.Parent = game.CoreGui
-    ScreenGui.Name = "Zoins_V5_Updated"
-    ScreenGui.DisplayOrder = 1 
-
+    ScreenGui.Name = "Zoins_Gold_Edition"
+    
     MainFrameG.Name = "MainFrame"
     MainFrameG.Parent = ScreenGui
     MainFrameG.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
     MainFrameG.Position = UDim2.new(0.5, -140, 0.4, -200) 
     MainFrameG.Size = UDim2.new(0, 280, 0, 420)
     MainFrameG.Active = true
-    MainFrameG.Draggable = true
-    MainFrameG.Visible = true
+    Instance.new("UICorner", MainFrameG).CornerRadius = UDim.new(0, 20)
+    MakeDraggable(MainFrameG)
 
-    UICorner_Main.CornerRadius = UDim.new(0, 20)
-    UICorner_Main.Parent = MainFrameG
-    UIStroke_Main.Thickness = 2.5
-    UIStroke_Main.Parent = MainFrameG
-    UIStroke_Main.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    UIStroke_Main.Color = Color3.fromR
+    Title.Parent = MainFrameG
+    Title.Size = UDim2.new(1, 0, 0, 70)
+    Title.Text = "GOLD MOD"
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.Font = Enum.Font.FredokaOne
+    Title.TextSize = 35
+    Title.BackgroundTransparency = 1
+
+    ContentFrame.Parent = MainFrameG
+    ContentFrame.Size = UDim2.new(1, 0, 1, -80)
+    ContentFrame.Position = UDim2.new(0, 0, 0, 75)
+    ContentFrame.BackgroundTransparency = 1
+    local UIList = Instance.new("UIListLayout", ContentFrame)
+    UIList.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    UIList.Padding = UDim.new(0, 10)
+
+    local function CreateBtn(txt, callback)
+        local b = Instance.new("TextButton", ContentFrame)
+        b.Size = UDim2.new(0.8, 0, 0, 40)
+        b.Text = txt
+        b.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+        b.TextColor3 = Color3.new(1,1,1)
+        Instance.new("UICorner", b)
+        b.MouseButton1Click:Connect(callback)
+    end
+
+    CreateBtn("Speed 100", function() game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100 end)
+    CreateBtn("Jump 150", function() game.Players.LocalPlayer.Character.Humanoid.JumpPower = 150 end)
+    CreateBtn("Infinite Yield", function() loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))() end)
+
+    CloseBtnG.Parent = MainFrameG
+    CloseBtnG.Size = UDim2.new(0, 30, 0, 30)
+    CloseBtnG.Position = UDim2.new(1, -35, 0, 5)
+    CloseBtnG.Text = "X"
+    CloseBtnG.TextColor3 = Color3.new(1,0,0)
+    CloseBtnG.BackgroundTransparency = 1
+    CloseBtnG.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
+end
+
+-- ===================================
+-- Main Zoins Hub Logic
+-- ===================================
+local MapIDs = {
+    ["99 Nights"] = 10170091386,
+    ["MM2"] = 142823291,
+    ["Blox Fruits"] = 2753915549
+}
+
+local MyMaps = {
+    {
+        English = "99 Nights", 
+        Arabic = "99 ليلة", 
+        Keywords = "ليله ليلة 99ليلة 99ليله", 
+        Scripts = {{Name = "Vape Voidware", Link = "https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua"}}
+    },
+    {
+        English = "All Maps كل مابات", 
+        Arabic = "كل المابات", 
+        Keywords = "all maps universal speed fly", 
+        Scripts = {
+            {Name = "Gold Control", CustomAction = LoadGoldEdition},
+            {Name = "Universal Script", Link = "https://rawscripts.net/raw/Universal-Script-VR7-45290"}
+        }
+    },
+    {English = "MM2", Arabic = "جريمة قتل", Scripts = {{Link = "https://raw.githubusercontent.com/Joystickplays/psychic-octo-invention/main/source/yarhm/1.19/yarhm.lua"}}},
+    {English = "Blox Fruits", Arabic = "بلوكس فروت", Scripts = {{Link = "https://rawscripts.net/raw/Universal-Script-Redz-Hub-Control-Rework-Auto-Farm-Dungeons-etc-82673"}}}
+}
+
+-- نظام الذاكرة الذكية
+local SortedMaps = {}
+local CurrentPlaceId = game.PlaceId
+local ActiveMapData = nil
+for _, data in ipairs(MyMaps) do
+    if MapIDs[data.English] == CurrentPlaceId then ActiveMapData = data break end
+end
+
+if ActiveMapData then
+    table.insert(SortedMaps, ActiveMapData)
+    for _, d in ipairs(MyMaps) do if d ~= ActiveMapData then table.insert(SortedMaps, d) end end
+else
+    SortedMaps = MyMaps
+end
+
+-- ==========================================================
+-- واجهة المستخدم الرئيسية
+-- ==========================================================
+local sgui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+local MainFrame = Instance.new("Frame", sgui)
+MainFrame.Size = UDim2.new(0, 350, 0, 450)
+MainFrame.Position = UDim2.new(0.5, -175, 0.5, -225)
+MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+Instance.new("UICorner", MainFrame)
+MakeDraggable(MainFrame)
+
+local TitleLabel = Instance.new("TextLabel", MainFrame)
+TitleLabel.Size = UDim2.new(1, 0, 0, 60)
+TitleLabel.Text = "Zoins Hub V5"
+TitleLabel.TextColor3 = Color3.fromRGB(218, 165, 32)
+TitleLabel.Font = Enum.Font.GothamBlack
+TitleLabel.TextSize = 30
+TitleLabel.BackgroundTransparency = 1
+
+local Scroll = Instance.new("ScrollingFrame", MainFrame)
+Scroll.Size = UDim2.new(1, -20, 1, -80)
+Scroll.Position = UDim2.new(0, 10, 0, 70)
+Scroll.BackgroundTransparency = 1
+Scroll.ScrollBarThickness = 3
+Scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+local layout = Instance.new("UIListLayout", Scroll); layout.Padding = UDim.new(0, 10)
+
+-- واجهة السكربتات الفرعية
+local SubFrame = Instance.new("Frame", MainFrame)
+SubFrame.Size = UDim2.new(1, 0, 1, 0)
+SubFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+SubFrame.Visible = false
+SubFrame.ZIndex = 10
+Instance.new("UICorner", SubFrame)
+
+local SubTitle = Instance.new("TextLabel", SubFrame)
+SubTitle.Size = UDim2.new(1, 0, 0, 60)
+SubTitle.Text = "Scripts"
+SubTitle.TextColor3 = Color3.new(1,1,1)
+SubTitle.Font = Enum.Font.GothamBold
+SubTitle.TextSize = 20
+SubTitle.BackgroundTransparency = 1
+SubTitle.ZIndex = 11
+
+local SubScroll = Instance.new("ScrollingFrame", SubFrame)
+SubScroll.Size = UDim2.new(1, -20, 1, -80)
+SubScroll.Position = UDim2.new(0, 10, 0, 70)
+SubScroll.BackgroundTransparency = 1
+SubScroll.ZIndex = 11
+local subLayout = Instance.new("UIListLayout", SubScroll); subLayout.Padding = UDim.new(0, 10)
+
+local BackBtn = Instance.new("TextButton", SubFrame)
+BackBtn.Size = UDim2.new(0, 40, 0, 40)
+BackBtn.Text = "←"
+BackBtn.TextColor3 = Color3.new(1,1,1)
+BackBtn.TextSize = 25
+BackBtn.BackgroundTransparency = 1
+BackBtn.ZIndex = 12
+BackBtn.MouseButton1Click:Connect(function() SubFrame.Visible = false end)
+
+-- دالة إضافة المابات للقائمة
+function AddMap(data)
+    local f = Instance.new("Frame", Scroll)
+    f.Size = UDim2.new(1, -5, 0, 60)
+    f.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    Instance.new("UICorner", f)
+    
+    local t = Instance.new("TextLabel", f)
+    t.Size = UDim2.new(1, -90, 1, 0)
+    t.Position = UDim2.new(0, 15, 0, 0)
+    t.Text = data.Arabic or data.English
+    t.TextColor3 = Color3.new(1, 1, 1)
+    t.Font = Enum.Font.GothamBold
+    t.TextSize = 16
+    t.BackgroundTransparency = 1
+    t.TextXAlignment = Enum.TextXAlignment.Left
+
+    local btn = Instance.new("TextButton", f)
+    btn.Size = UDim2.new(0, 80, 0, 35)
+    btn.Position = UDim2.new(1, -90, 0.5, -17)
+    btn.Text = "Open"
+    btn.BackgroundColor3 = Color3.fromRGB(218, 165, 32)
+    Instance.new("UICorner", btn)
+
+    btn.MouseButton1Click:Connect(function()
+        for _, child in pairs(SubScroll:GetChildren()) do if child:IsA("Frame") then child:Destroy() end end
+        SubTitle.Text = data.English
+        
+        for _, scr in ipairs(data.Scripts) do
+            local sf = Instance.new("Frame", SubScroll)
+            sf.Size = UDim2.new(1, -5, 0, 50)
+            sf.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+            Instance.new("UICorner", sf)
+            
+            local st = Instance.new("TextLabel", sf)
+            st.Size = UDim2.new(1, -90, 1, 0)
+            st.Position = UDim2.new(0, 10, 0, 0)
+            st.Text = scr.Name or data.English
+            st.TextColor3 = Color3.new(1, 1, 1)
+            st.BackgroundTransparency = 1
+            st.TextSize = 14
+
+            local sbtn = Instance.new("TextButton", sf)
+            sbtn.Size = UDim2.new(0, 70, 0, 30)
+            sbtn.Position = UDim2.new(1, -80, 0.5, -15)
+            sbtn.Text = "Start"
+            sbtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+            sbtn.TextColor3 = Color3.new(1,1,1)
+            Instance.new("UICorner", sbtn)
+
+            sbtn.MouseButton1Click:Connect(function()
+                ShowNotification("Executing...")
+                if scr.CustomAction then 
+                    scr.CustomAction() 
+                else
+                    -- تشغيل الرابط بشكل مباشر ومضمون
+                    task.spawn(function()
+                        local success, content = pcall(game.HttpGet, game, scr.Link)
+                        if success then
+                            loadstring(content)()
+                        else
+                            ShowNotification("Error Loading!")
+                        end
+                    end)
+                end
+            end)
+        end
+        SubFrame.Visible = true
+    end)
+end
+
+for _, data in ipairs(SortedMaps) do AddMap(data) end
+
+local CloseBtn = Instance.new("TextButton", MainFrame)
+CloseBtn.Size = UDim2.new(0, 30, 0, 30)
+CloseBtn.Position = UDim2.new(1, -35, 0, 10)
+CloseBtn.Text = "X"
+CloseBtn.TextColor3 = Color3.new(1,0,0)
+CloseBtn.BackgroundTransparency = 1
+CloseBtn.MouseButton1Click:Connect(function() sgui:Destroy() end)
+
+ShowNotification("Zoins Hub Loaded Successfully!")
