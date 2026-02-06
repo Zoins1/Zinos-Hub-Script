@@ -1,4 +1,4 @@
--- -- [[ Zoins Hub - النسخة المصلحة والنهائية - بدون تحميل مسبق ]] --
+-- -- [[ Zoins Hub - النسخة المصلحة والنهائية ]] --
 
 local UserInputService = game:GetService("UserInputService")
 local UIS = UserInputService
@@ -6,6 +6,19 @@ local IsMobile = UIS.TouchEnabled and not UIS.KeyboardEnabled
 local IsPC = UIS.KeyboardEnabled and UIS.MouseEnabled
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
+
+-- ===================================
+-- تقنية التحميل المسبق
+-- ===================================
+local CachedScripts = {}
+local function PreloadScript(url)
+    if not url or url == "" then return end
+    task.spawn(function()
+        pcall(function() 
+            CachedScripts[url] = game:HttpGet(url) 
+        end)
+    end)
+end
 
 -- ===================================
 -- نظام الإشعارات المخصص
@@ -320,7 +333,14 @@ local MyMaps = {
     {English = "فعاليات الرسم للعرب", Arabic = "فعاليات الرسم للعرب", Keywords = "رسم", Scripts = {{Link = "https://rawscripts.net/raw/Universal-Script-HD-copying-LOSKY-59113"}}}
 }
 
--- تم حذف دالة PreloadScript لضمان جلب السكربت "فرش" عند الحاجة
+-- تشغيل التحميل المسبق
+for _, data in ipairs(MyMaps) do
+    for _, scr in ipairs(data.Scripts) do
+        if scr.Link then
+            PreloadScript(scr.Link)
+        end
+    end
+end
 
 -- ==========================================================
 -- [[ ميزة الذاكرة الذكية المحدثة ]] --
@@ -364,7 +384,7 @@ end
 ActiveMapData = FindCurrentMapData()
 local allMaps = MyMaps[1]
 
--- ترتيب القائمة
+-- ترتيب القائمة (بدون رسائل إشعار)
 if ActiveMapData then
     table.insert(SortedMaps, ActiveMapData)
     SaveLastMap(ActiveMapData.English)
@@ -480,8 +500,7 @@ function AddMap(data)
                     scr.CustomAction()
                 else 
                     AntiLagWrap(function() 
-                        -- جلب السكربت مباشرة "فرش" من الرابط
-                        local code = game:HttpGet(scr.Link, true)
+                        local code = CachedScripts[scr.Link] or game:HttpGet(scr.Link, true)
                         loadstring(code)() 
                     end) 
                 end
