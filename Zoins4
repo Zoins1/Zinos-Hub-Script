@@ -7,6 +7,16 @@ local IsPC = UIS.KeyboardEnabled and UIS.MouseEnabled
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 
+-- [[ ميزة التحميل المسبق الذكية ]] --
+local LoadedScriptsCache = {}
+local function PreloadMapScript(url)
+    if not url or LoadedScriptsCache[url] then return end
+    task.spawn(function()
+        local success, code = pcall(game.HttpGet, game, url, true)
+        if success then LoadedScriptsCache[url] = code end
+    end)
+end
+
 -- ===================================
 -- نظام الإشعارات المخصص
 -- ===================================
@@ -362,6 +372,13 @@ end
 ActiveMapData = FindCurrentMapData()
 local allMaps = MyMaps[1]
 
+-- [[ تنفيذ التحميل المسبق فور تشغيل الهب ]] --
+if ActiveMapData then
+    for _, scr in ipairs(ActiveMapData.Scripts) do
+        if scr.Link then PreloadMapScript(scr.Link) end
+    end
+end
+
 if ActiveMapData then
     table.insert(SortedMaps, ActiveMapData)
     SaveLastMap(ActiveMapData.English)
@@ -471,15 +488,20 @@ function AddMap(data)
             local sG = Instance.new("UIGradient", sbtn); sG.Color = ColorSequence.new(Color3.fromRGB(218, 165, 32), Color3.fromRGB(255, 250, 240))
             
             sbtn.MouseButton1Click:Connect(function()
-                ShowNotification("Please wait a few seconds for it to start\nانتظر ثواني حتى يشتغل")
+                ShowNotification("Executing Script...")
                 
                 if scr.CustomAction then 
                     scr.CustomAction()
                 else 
-                    -- [[ التعديل الجديد: تشغيل مباشر ومنفصل بدون تأخير ]] --
+                    -- [[ ميزة التشغيل الفوري والتحميل المسبق ]] --
                     task.spawn(function()
-                        local success, code = pcall(game.HttpGet, game, scr.Link, true)
-                        if success then
+                        local code = LoadedScriptsCache[scr.Link]
+                        if not code then
+                            local success, fetchedCode = pcall(game.HttpGet, game, scr.Link, true)
+                            if success then code = fetchedCode end
+                        end
+                        
+                        if code then
                             loadstring(code)()
                         else
                             warn("Zoins Hub | Failed to fetch: " .. tostring(scr.Link))
