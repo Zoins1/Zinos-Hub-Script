@@ -1,4 +1,4 @@
--- -- [[ Zoins Hub - النسخة المصلحة والنهائية - تشغيل مباشر ]] --
+-- -- [[ Zoins Hub - النسخة المصلحة والنهائية - تشغيل مباشر مع ميزة تزييف السلاسة ]] --
 
 local UserInputService = game:GetService("UserInputService")
 local UIS = UserInputService
@@ -6,6 +6,21 @@ local IsMobile = UIS.TouchEnabled and not UIS.KeyboardEnabled
 local IsPC = UIS.KeyboardEnabled and UIS.MouseEnabled
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
+
+-- ===================================
+-- ميزة تزييف السلاسة (Visual Smoothness Spoofing)
+-- تجعل اللعب يبدو ناعماً حتى عند وجود لاق خفيف دون تقليل الدقة
+-- ===================================
+task.spawn(function()
+    local Camera = workspace.CurrentCamera
+    RunService:BindToRenderStep("ZoinsSmoothness", Enum.RenderPriority.Camera.Value + 1, function()
+        if Camera then
+            Camera.InterpolationThrottling = Enum.InterpolationThrottlingMode.Disabled
+        end
+    end)
+    settings().Network.IncomingReplicationLag = 0
+    if setfpscap then setfpscap(999) end
+end)
 
 -- ===================================
 -- نظام الإشعارات المخصص
@@ -289,7 +304,9 @@ local MapIDs = {
     ["BROOKHAVEN"] = 4924922222,
     ["Steal a Brainrot"] = 109983668079237,
     ["Blox Fruits"] = 2753915549,
-    ["فعاليات الرسم للعرب"] = 109425102643289
+    ["فعاليات الرسم للعرب"] = 109425102643289,
+    ["99 Nights"] = 17653775463,
+    ["RIVALS"] = 17625359962
 }
 
 local MyMaps = {
@@ -304,6 +321,8 @@ local MyMaps = {
             {Name = "Smart aiming 2 / ايم بوت 2", Link = "https://raw.githubusercontent.com/Joshingtonn123/JoshScript/refs/heads/main/SyrexhubSniperOrDie"}
         }
     },
+    {English = "RIVALS", Arabic = "رايفلز", Keywords = "rivals رايفلز ريفلز منافسين", Scripts = {{Name = "Smart aiming / ايم بوت", Link = "https://raw.githubusercontent.com/DanielHubll/DanielHubll/refs/heads/main/Aimbot%20Mobile"}}},
+    {English = "99 Nights", Arabic = "99 ليلة", Keywords = "99 nights ليله ليلة forest", Scripts = {{Link = "https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua"}}},
     {English = "Steal a Brainrot", Arabic = "ماب سرقة", Keywords = "سرقة سرقه brainrot", Scripts = {{Link = "https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua"}}},
     {English = "Escape Tsunami For Brainrots!", Arabic = "هروب من التسونامي", Keywords = "تسونامي تسوناني هروب من التسونامي brainrots برين روت", Scripts = {{Link = "https://raw.githubusercontent.com/gumanba/Scripts/main/EscapeTsunamiForBrainrots"}}},
     {English = "MM2", Arabic = "جريمة قتل غامضة", Keywords = "mm2 مم مم2 م م 2 ممردر", Scripts = {{Link = "https://raw.githubusercontent.com/Joystickplays/psychic-octo-invention/main/source/yarhm/1.19/yarhm.lua"}}},
@@ -344,6 +363,10 @@ local function FindCurrentMapData()
         if MapIDs[data.English] == CurrentPlaceId then return data end
     end
     
+    if CurrentPlaceId == 17625359962 or CurrentPlaceId == 6035872082 then
+        for _, data in ipairs(MyMaps) do if data.English == "RIVALS" then return data end end
+    end
+
     local MarketplaceService = game:GetService("MarketplaceService")
     local success, info = pcall(function() return MarketplaceService:GetProductInfo(game.PlaceId) end)
     if success and info then
@@ -354,6 +377,10 @@ local function FindCurrentMapData()
             end
         elseif gameName:find("steal a brainrot") or gameName:find("سرقة") then
             for _, data in ipairs(MyMaps) do if data.English == "Steal a Brainrot" then return data end end
+        elseif gameName:find("99 nights") or gameName:find("99 ليله") then
+             for _, data in ipairs(MyMaps) do if data.English == "99 Nights" then return data end end
+        elseif gameName:find("rivals") or gameName:find("رايفلز") then
+             for _, data in ipairs(MyMaps) do if data.English == "RIVALS" then return data end end
         end
     end
     return nil
@@ -473,10 +500,19 @@ function AddMap(data)
             sbtn.MouseButton1Click:Connect(function()
                 ShowNotification("Please wait a few seconds for it to start\nانتظر ثواني حتى يشتغل")
                 
+                if data.English == "RIVALS" then
+                    local oldSetClipboard = setclipboard
+                    getgenv().setclipboard = function(text)
+                        if text:find("discord") or text:find("http") then
+                            return 
+                        end
+                        if oldSetClipboard then oldSetClipboard(text) end
+                    end
+                end
+
                 if scr.CustomAction then 
                     scr.CustomAction()
                 else 
-                    -- [[ التعديل الجديد: تشغيل مباشر ومنفصل بدون تأخير ]] --
                     task.spawn(function()
                         local success, code = pcall(game.HttpGet, game, scr.Link, true)
                         if success then
