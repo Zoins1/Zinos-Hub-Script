@@ -1,4 +1,4 @@
-local UserInputService = game:GetService("UserInputService")
+Local UserInputService = game:GetService("UserInputService")
 local UIS = UserInputService
 local IsMobile = UIS.TouchEnabled and not UIS.KeyboardEnabled
 local IsPC = UIS.KeyboardEnabled and UIS.MouseEnabled
@@ -326,8 +326,7 @@ local MyMaps = {
         Arabic = "هروب من التسونامي", 
         Keywords = "تسونامي تسوناني هروب من التسونامي brainrots برين روت", 
         Scripts = {
-            {Name = "Script 1", Link = "https://raw.githubusercontent.com/gumanba/Scripts/main/EscapeTsunamiForBrainrots"},
-            {Name = "لاتموت/No Kill", Link = "https://pastefy.app/BXXq233t/raw"} -- الإضافة الجديدة المطلوبة
+            {Name = "Script 1", Link = "https://raw.githubusercontent.com/gumanba/Scripts/main/EscapeTsunamiForBrainrots"}
         }
     },
     {English = "MM2", Arabic = "جريمة قتل غامضة", Keywords = "mm2 مم مم2 م م 2 ممردر", Scripts = {{Link = "https://raw.githubusercontent.com/Joystickplays/psychic-octo-invention/main/source/yarhm/1.19/yarhm.lua"}}},
