@@ -296,7 +296,7 @@ end
 -- Main Zoins Hub Logic (Ramadan Theme)
 -- ===================================
 local MapIDs = {
-    ["Escape Tsunami For Brainrots!"] = 18451336104,
+    ["Escape Tsunami For Brainrots"] = 18451336104, -- تم تعديل الاسم هنا
     ["MM2"] = 142823291,
     ["BROOKHAVEN"] = 4924922222,
     ["Steal a Brainrot"] = 109983668079237,
@@ -322,7 +322,7 @@ local MyMaps = {
     {English = "99 Nights", Arabic = "99 ليلة", Keywords = "99 nights ليله ليلة forest", Scripts = {{Link = "https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua"}}},
     {English = "Steal a Brainrot", Arabic = "ماب سرقة", Keywords = "سرقة سرقه brainrot", Scripts = {{Link = "https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua"}}},
     {
-        English = "Escape Tsunami For Brainrots!", 
+        English = "Escape Tsunami For Brainrots", -- تم تعديل الاسم هنا
         Arabic = "هروب من التسونامي", 
         Keywords = "تسونامي تسوناني هروب من التسونامي brainrots برين روت", 
         Scripts = {
@@ -336,13 +336,14 @@ local MyMaps = {
         Keywords = "بروخافن بيوت ماب البيوت ماب بيوت", 
         Scripts = {
             {Name = "Script 1", Link = "https://rawscripts.net/raw/Universal-Script-Rael-Hub-27610"}, 
-            {Name = "Script 2", Link = "https://rawscripts.net/raw/Brookhaven-RP-Rael-Hub-58126"}
+            {Name = "Script 2", Link = "https://rawscripts.net/raw/Universal-Script-VR7-45290"} -- تم تغيير الرابط ليعمل VR7 هنا
         }
     },
     {English = "Blox Fruits", Arabic = "بلوكس فروتس", Keywords = "بلوكس", Scripts = {{Link = "https://rawscripts.net/raw/Universal-Script-Working-redz-hub-80278"}}},
     {English = "فعاليات الرسم للعرب", Arabic = "فعاليات الرسم للعرب", Keywords = "رسم", Scripts = {{Link = "https://rawscripts.net/raw/Universal-Script-HD-copying-LOSKY-59113"}}}
 }
 
+-- [باقي الكود التنسيقي والواجهة يظل كما هو لضمان عمل السكربت]
 -- ==========================================================
 -- [[ ميزة الذاكرة الذكية المحدثة ]] --
 -- ==========================================================
@@ -377,7 +378,7 @@ local function FindCurrentMapData()
     if success and info then
         local gameName = info.Name:lower()
         if gameName:find("tsunami") or gameName:find("تسونامي") or gameName:find("brainrots") then
-            for _, data in ipairs(MyMaps) do if data.English == "Escape Tsunami For Brainrots!" then return data end end
+            for _, data in ipairs(MyMaps) do if data.English == "Escape Tsunami For Brainrots" then return data end end
         elseif gameName:find("steal a brainrot") or gameName:find("سرقة") then
             for _, data in ipairs(MyMaps) do if data.English == "Steal a Brainrot" then return data end end
         elseif gameName:find("99 nights") or gameName:find("99 ليله") then
