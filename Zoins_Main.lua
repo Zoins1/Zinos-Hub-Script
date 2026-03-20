@@ -121,6 +121,67 @@ local MyMaps = {
     {English = "🎉فعاليات الرسم للعرب🎆", Arabic = "🎉فعاليات الرسم للعرب🎆", Keywords = "رسم", Scripts = {{Name = "فعاليات الرسم للعرب🎉", Link = "https://raw.githubusercontent.com/Zoins1/Zinos-Hub-Script/refs/heads/main/Zoins_zoins.lua"}}}
 }
 
+-- [نظام التعرف على الماب المحدث لنسخة العيد]
+local MapIDs = {
+    ["🎆Escape Tsunami For Brainrots🎉"] = 18451336104,
+    ["🎆MM2🎉"] = 142823291,
+    ["🎆Brookhaven🎉"] = 4924922222,
+    ["🎆Steal a Brainrot🎉"] = 109983668079237,
+    ["🎆Blox Fruits🎉"] = 2753915549,
+    ["🎉فعاليات الرسم للعرب🎆"] = 77654740977915, 
+    ["🎆99 Nights🎉"] = 17653775463,
+    ["🎆RIVALS🎉"] = 17625359962
+}
+
+local FileName = "ZoinsLastMap.txt"
+local function SaveLastMap(mapName) if writefile then pcall(function() writefile(FileName, mapName) end) end end
+local function GetSavedMap() if isfile and isfile(FileName) then return readfile(FileName) end return nil end
+
+local SortedMaps = {}
+local CurrentPlaceId = game.PlaceId
+local SavedMapName = GetSavedMap()
+local ActiveMapData = nil
+
+local function FindCurrentMapData()
+    if game.GameId == 444163659 then
+        for _, data in ipairs(MyMaps) do if data.English == "🎆Blox Fruits🎉" then return data end end
+    end
+    for _, data in ipairs(MyMaps) do if MapIDs[data.English] == CurrentPlaceId then return data end end
+    if CurrentPlaceId == 17625359962 or CurrentPlaceId == 6035872082 then
+        for _, data in ipairs(MyMaps) do if data.English == "🎆RIVALS🎉" then return data end end
+    end
+    local success, info = pcall(function() return game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId) end)
+    if success and info then
+        local gn = info.Name:lower()
+        if gn:find("tsunami") or gn:find("تسونامي") then return MyMaps[5]
+        elseif gn:find("steal a brainrot") or gn:find("سرقة") then return MyMaps[4]
+        elseif gn:find("99 nights") or gn:find("99 ليله") then return MyMaps[3]
+        elseif gn:find("rivals") or gn:find("رايفلز") then return MyMaps[2]
+        elseif gn:find("blox fruits") then return MyMaps[8]
+        elseif gn:find("فعاليات الرسم") then return MyMaps[9]
+        end
+    end
+    return nil
+end
+
+ActiveMapData = FindCurrentMapData()
+local allMaps = MyMaps[1]
+if ActiveMapData then
+    table.insert(SortedMaps, ActiveMapData)
+    SaveLastMap(ActiveMapData.English)
+    if ActiveMapData.English ~= allMaps.English then table.insert(SortedMaps, allMaps) end
+else
+    table.insert(SortedMaps, allMaps)
+    if SavedMapName and SavedMapName ~= allMaps.English then
+        for _, data in ipairs(MyMaps) do if data.English == SavedMapName then table.insert(SortedMaps, data) break end end
+    end
+end
+for _, data in ipairs(MyMaps) do
+    local added = false
+    for _, v in ipairs(SortedMaps) do if v.English == data.English then added = true break end end
+    if not added then table.insert(SortedMaps, data) end
+end
+
 -- [واجهة المستخدم]
 local sgui = Instance.new("ScreenGui", game:GetService("CoreGui"))
 sgui.DisplayOrder = 10 
@@ -205,6 +266,12 @@ local function CleanText(str) if not str then return "" end str = str:lower():gs
 function AddMap(data)
     local f = Instance.new("Frame", Scroll); f.Size = UDim2.new(1, -10, 0, 65); f.BackgroundColor3 = Color3.fromRGB(35, 15, 25); Instance.new("UICorner", f)
     local smartTags = CleanText(data.English .. " " .. (data.Arabic or "") .. " " .. (data.Keywords or ""))
+    
+    if ActiveMapData and data.English == ActiveMapData.English then
+        f.BackgroundColor3 = Color3.fromRGB(50, 20, 30)
+        local s = Instance.new("UIStroke", f); s.Color = Color3.fromRGB(255, 215, 0); s.Thickness = 1.5
+    end
+
     local t = Instance.new("TextLabel", f); t.Size = UDim2.new(1, -100, 1, 0); t.Position = UDim2.new(0, 15, 0, 0); t.Text = data.English; t.TextColor3 = Color3.new(1, 1, 1); t.BackgroundTransparency = 1; t.Font = Enum.Font.GothamBold; t.TextSize = 16
     local btn = Instance.new("TextButton", f); btn.Size = UDim2.new(0, 80, 0, 35); btn.Position = UDim2.new(1, -90, 0.5, -17); btn.Text = "Start"; btn.Font = Enum.Font.GothamBold; btn.TextColor3 = Color3.fromRGB(255, 255, 255); btn.BackgroundColor3 = Color3.fromRGB(60, 10, 30); Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
     local bStroke = Instance.new("UIStroke", btn); bStroke.Color = Color3.fromRGB(218, 165, 32); bStroke.Thickness = 1.5
@@ -244,7 +311,7 @@ function AddMap(data)
 end
 
 local MapFrames = {}
-for _, data in ipairs(MyMaps) do table.insert(MapFrames, AddMap(data)) end
+for _, data in ipairs(SortedMaps) do table.insert(MapFrames, AddMap(data)) end
 
 local ComingSoon = Instance.new("TextLabel", Scroll)
 ComingSoon.Size = UDim2.new(1, 0, 0, 50); 
