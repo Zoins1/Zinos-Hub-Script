@@ -108,10 +108,10 @@ local MyMaps = {
             {Name = "Script 1", Link = "https://raw.githubusercontent.com/Zoins1/Zinos-Hub-Script/refs/heads/main/Zoins_v5cc.lua"},
             {Name = "Script 2", Link = "https://rawscripts.net/raw/Universal-Script-VR7-45290"},
             {Name = "Smart aiming / ايم بوت", Link = "https://raw.githubusercontent.com/DanielHubll/DanielHubll/refs/heads/main/Aimbot%20Mobile"},
-            {Name = "Smart aiming 2 / ايم بوت 2", Link = "https://raw.githubusercontent.com/Joshingtonn123/JoshScript/refs/heads/main/SyrexhubSniperOrDie", Protect = true}
+            {Name = "Smart aiming 2 / ايم بوت 2", Link = "https://raw.githubusercontent.com/Joshingtonn123/JoshScript/refs/heads/main/SyrexhubSniperOrDie"}
         }
     },
-    {English = "🎆RIVALS🎉", Arabic = "رايفلز", Keywords = "rivals رايفلز ريفلز منافسين", Scripts = {{Link = "https://raw.githubusercontent.com/DanielHubll/DanielHubll/refs/heads/main/Aimbot%20Mobile", Protect = true}}},
+    {English = "🎆RIVALS🎉", Arabic = "رايفلز", Keywords = "rivals رايفلز ريفلز منافسين", Scripts = {{Link = "https://raw.githubusercontent.com/DanielHubll/DanielHubll/refs/heads/main/Aimbot%20Mobile"}}},
     {English = "🎆99 Nights🎉", Arabic = "99 ليلة", Keywords = "99 nights ليله ليلة forest", Scripts = {{Link = "https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua"}}},
     {English = "🎆Steal a Brainrot🎉", Arabic = "ماب سرقة", Keywords = "سرقة سرقه brainrot", Scripts = {{Link = "https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua"}}},
     {English = "🎆Escape Tsunami For Brainrots🎉", Arabic = "هروب من التسونامي", Keywords = "تسونامي تسوناني هروب من التسونامي brainrots برين روت", Scripts = {{Link = "https://raw.githubusercontent.com/gumanba/Scripts/main/EscapeTsunamiForBrainrots"}}},
@@ -121,14 +121,13 @@ local MyMaps = {
     {English = "🎉فعاليات الرسم للعرب🎆", Arabic = "🎉فعاليات الرسم للعرب🎆", Keywords = "رسم", Scripts = {{Name = "فعاليات الرسم للعرب🎉", Link = "https://raw.githubusercontent.com/Zoins1/Zinos-Hub-Script/refs/heads/main/Zoins_zoins.lua"}}}
 }
 
--- [نظام التعرف على الماب المحدث لنسخة العيد]
 local MapIDs = {
     ["🎆Escape Tsunami For Brainrots🎉"] = 18451336104,
     ["🎆MM2🎉"] = 142823291,
     ["🎆Brookhaven🎉"] = 4924922222,
     ["🎆Steal a Brainrot🎉"] = 109983668079237,
     ["🎆Blox Fruits🎉"] = 2753915549,
-    ["🎉فعاليات الرسم للعرب🎆"] = 77654740977915, 
+    ["🎉فعاليات الرسم للعرب🎆"] = 17453916834, 
     ["🎆99 Nights🎉"] = 17653775463,
     ["🎆RIVALS🎉"] = 17625359962
 }
@@ -182,7 +181,6 @@ for _, data in ipairs(MyMaps) do
     if not added then table.insert(SortedMaps, data) end
 end
 
--- [واجهة المستخدم]
 local sgui = Instance.new("ScreenGui", game:GetService("CoreGui"))
 sgui.DisplayOrder = 10 
 
@@ -286,21 +284,21 @@ function AddMap(data)
             sbtn.BackgroundColor3 = Color3.fromRGB(60, 10, 30); sbtn.TextColor3 = Color3.new(1,1,1)
             
             sbtn.MouseButton1Click:Connect(function()
-                ShowNotification("...Lodeng/جاري تشغيل")
-                if scr.Protect then
-                    local oldClipboard = setclipboard
+                ShowNotification("...Loading / جاري التشغيل")
+                
+                -- إغلاق ميزة النسخ نهائياً عند تشغيل السكربت
+                if setclipboard then
                     setclipboard = function() end
-                    task.spawn(function()
-                        local success, code = pcall(game.HttpGet, game, scr.Link, true)
-                        if success then loadstring(code)() end
-                    end)
-                    task.delay(5, function() setclipboard = oldClipboard end)
-                else
-                    task.spawn(function()
-                        local success, code = pcall(game.HttpGet, game, scr.Link, true)
-                        if success then loadstring(code)() end
-                    end)
                 end
+                if toclipboard then
+                    toclipboard = function() end
+                end
+
+                task.spawn(function()
+                    local success, code = pcall(game.HttpGet, game, scr.Link, true)
+                    if success then loadstring(code)() end
+                end)
+                
                 sbtn.Text = "Done ✓"; sbtn.BackgroundColor3 = Color3.fromRGB(0, 150, 50)
                 task.delay(2, function() sbtn.Text = "Start"; sbtn.BackgroundColor3 = Color3.fromRGB(60, 10, 30) end)
             end)
