@@ -113,7 +113,15 @@ local MyMaps = {
     },
     {English = "🎆RIVALS🎉", Arabic = "رايفلز", Keywords = "rivals رايفلز ريفلز منافسين", Scripts = {{Link = "https://raw.githubusercontent.com/DanielHubll/DanielHubll/refs/heads/main/Aimbot%20Mobile"}}},
     {English = "🎆99 Nights🎉", Arabic = "99 ليلة", Keywords = "99 nights ليله ليلة forest", Scripts = {{Link = "https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua"}}},
-    {English = "🎆Steal a Brainrot🎉", Arabic = "ماب سرقة", Keywords = "سرقة سرقه brainrot", Scripts = {{Link = "https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua"}}},
+    {
+        English = "🎆Steal a Brainrot🎉", 
+        Arabic = "ماب سرقة", 
+        Keywords = "سرقة سرقه brainrot", 
+        Scripts = {
+            {Name = "Script 1", Link = "https://raw.githubusercontent.com/panelhenil-oss/NOVI-ROLI/refs/heads/main/ROLI.txt"},
+            {Name = "Script 2", Link = "https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua"}
+        }
+    },
     {English = "🎆Escape Tsunami For Brainrots🎉", Arabic = "هروب من التسونامي", Keywords = "تسونامي تسوناني هروب من التسونامي brainrots برين روت", Scripts = {{Link = "https://raw.githubusercontent.com/gumanba/Scripts/main/EscapeTsunamiForBrainrots"}}},
     {English = "🎆MM2🎉", Arabic = "جريمة قتل غامضة", Keywords = "mm2 مم مم2 م م 2 ممردر", Scripts = {{Link = "https://raw.githubusercontent.com/Joystickplays/psychic-octo-invention/main/source/yarhm/1.19/yarhm.lua"}}},
     {English = "🎆Brookhaven🎉", Arabic = "بروخافن", Keywords = "بروخافن بيوت ماب البيوت ماب بيوت brookhaven", Scripts = {{Name = "Script 1", Link = "https://rawscripts.net/raw/Universal-Script-Rael-Hub-27610"}, {Name = "Script 2", Link = "https://rawscripts.net/raw/Universal-Script-VR7-45290"}}},
@@ -121,6 +129,7 @@ local MyMaps = {
     {English = "🎉فعاليات الرسم للعرب🎆", Arabic = "🎉فعاليات الرسم للعرب🎆", Keywords = "رسم", Scripts = {{Name = "فعاليات الرسم للعرب🎉", Link = "https://raw.githubusercontent.com/Zoins1/Zinos-Hub-Script/refs/heads/main/Zoins_zoins.lua"}}}
 }
 
+-- باقي الكود (التصميم والمنطق) كما هو بدون أي تغيير
 local MapIDs = {
     ["🎆Escape Tsunami For Brainrots🎉"] = 18451336104,
     ["🎆MM2🎉"] = 142823291,
@@ -286,7 +295,6 @@ function AddMap(data)
             sbtn.MouseButton1Click:Connect(function()
                 ShowNotification("...Loading / جاري التشغيل")
                 
-                -- إغلاق ميزة النسخ نهائياً عند تشغيل السكربت
                 if setclipboard then
                     setclipboard = function() end
                 end
