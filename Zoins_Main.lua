@@ -106,7 +106,7 @@ local MyMaps = {
         Keywords = "all maps universal speed fly noclip jump hack كل مابات aimbot ايم بوت", 
         Scripts = {
             {Name = "Script 1", Link = "https://raw.githubusercontent.com/Zoins1/Zinos-Hub-Script/refs/heads/main/Zoins_v5cc.lua"},
-            {Name = "Script 2", Link = "https://rawscripts.net/raw/Universal-Script-VR7-45290"},
+            {Name = "Script 2", Link = "https://rawscripts.net/raw/Universal-Script-VR7-146159"))()"},
             {Name = "Smart aiming / ايم بوت", Link = "https://raw.githubusercontent.com/DanielHubll/DanielHubll/refs/heads/main/Aimbot%20Mobile"},
             {Name = "Smart aiming 2 / ايم بوت 2", Link = "https://raw.githubusercontent.com/Joshingtonn123/JoshScript/refs/heads/main/SyrexhubSniperOrDie"}
         }
@@ -124,7 +124,7 @@ local MyMaps = {
     },
     {English = "🎆Escape Tsunami For Brainrots🎉", Arabic = "هروب من التسونامي", Keywords = "تسونامي تسوناني هروب من التسونامي brainrots برين روت", Scripts = {{Link = "https://raw.githubusercontent.com/gumanba/Scripts/main/EscapeTsunamiForBrainrots"}}},
     {English = "🎆MM2🎉", Arabic = "جريمة قتل غامضة", Keywords = "mm2 مم مم2 م م 2 ممردر", Scripts = {{Link = "https://raw.githubusercontent.com/Joystickplays/psychic-octo-invention/main/source/yarhm/1.19/yarhm.lua"}}},
-    {English = "🎆Brookhaven🎉", Arabic = "بروخافن", Keywords = "بروخافن بيوت ماب البيوت ماب بيوت brookhaven", Scripts = {{Name = "Script 1", Link = "https://rawscripts.net/raw/Universal-Script-Rael-Hub-27610"}, {Name = "Script 2", Link = "https://rawscripts.net/raw/Universal-Script-VR7-45290"}}},
+    {English = "🎆Brookhaven🎉", Arabic = "بروخافن", Keywords = "بروخافن بيوت ماب البيوت ماب بيوت brookhaven", Scripts = {{Name = "Script 1", Link = "https://rawscripts.net/raw/Universal-Script-Rael-Hub-27610"}, {Name = "Script 2", Link = "https://rawscripts.net/raw/Universal-Script-VR7-146159"))()"}}},
     {English = "🎆Blox Fruits🎉", Arabic = "بلوكس فروتس", Keywords = "بلوكس", Scripts = {{Link = "https://rawscripts.net/raw/Universal-Script-Working-redz-hub-80278"}}},
     {English = "🎉فعاليات الرسم للعرب🎆", Arabic = "🎉فعاليات الرسم للعرب🎆", Keywords = "رسم", Scripts = {{Name = "فعاليات الرسم للعرب🎉", Link = "https://raw.githubusercontent.com/Zoins1/Zinos-Hub-Script/refs/heads/main/Zoins_zoins.lua"}}}
 }
