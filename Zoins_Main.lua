@@ -1,5 +1,5 @@
 -- =================================================================
--- Zoins Hub - Eid Edition (Final Custom Version - Modified Names)
+-- Zoins Hub - Eid Edition (Final Custom Version - Modified Namess)
 -- =================================================================
 
 local UserInputService = game:GetService("UserInputService")
