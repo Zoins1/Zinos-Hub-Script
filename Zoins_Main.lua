@@ -337,4 +337,3 @@ SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
     for _, item in ipairs(MapFrames) do item.frame.Visible = (input == "" or item.smartTags:find(input, 1, true)) end
 end)
 
-ShowNotification("عيد مبارك سعيد / Eid Mubarak")
