@@ -1,6 +1,8 @@
--- Zoins Hub - Pure Neon Edition (No White Shine)
+-- Zoins Hub - Pure Neon Edition (Integrated Anti-Fling)
 local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
 
 if CoreGui:FindFirstChild("ZoinsHub_NeonPure") then CoreGui.ZoinsHub_NeonPure:Destroy() end
 
@@ -20,7 +22,6 @@ frame.Active = true
 frame.Draggable = true
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 15)
 
--- إطار نيون مضيء للواجهة (يتغير لونه)
 local mainStroke = Instance.new("UIStroke", frame)
 mainStroke.Thickness = 2.5
 mainStroke.Color = Color3.fromRGB(80, 0, 255)
@@ -43,7 +44,6 @@ closeBtn.TextColor3 = Color3.fromRGB(255, 50, 50)
 closeBtn.Font = Enum.Font.GothamBold
 closeBtn.TextSize = 24
 
--- زر نسخ
 local copyBtn = Instance.new("TextButton", frame)
 copyBtn.Size = UDim2.new(0.85, 0, 0, 40)
 copyBtn.Position = UDim2.new(0.075, 0, 0.32, 0)
@@ -57,7 +57,6 @@ local cStroke = Instance.new("UIStroke", copyBtn)
 cStroke.Color = Color3.fromRGB(0, 150, 255)
 cStroke.Thickness = 1.5
 
--- زر حماية
 local protectBtn = Instance.new("TextButton", frame)
 protectBtn.Size = UDim2.new(0.85, 0, 0, 40)
 protectBtn.Position = UDim2.new(0.075, 0, 0.65, 0)
@@ -71,7 +70,6 @@ local pStroke = Instance.new("UIStroke", protectBtn)
 pStroke.Color = Color3.fromRGB(255, 50, 50)
 pStroke.Thickness = 1.5
 
---// الدائرة العائمة Z (على اليمين)
 local openCircle = Instance.new("TextButton", gui)
 openCircle.Size = UDim2.new(0, 55, 0, 55)
 openCircle.Position = UDim2.new(1, -70, 0.5, -27)
@@ -87,18 +85,16 @@ local circStroke = Instance.new("UIStroke", openCircle)
 circStroke.Color = Color3.fromRGB(80, 0, 255)
 circStroke.Thickness = 2.5
 
--- تأثير تنفس للنيون (Pulse Effect) يغير ألوان الإطارات فقط
+-- تأثير النيون
 task.spawn(function()
     while true do
         local info = TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
-        local color1 = Color3.fromRGB(0, 150, 255) -- أزرق نيون
-        local color2 = Color3.fromRGB(150, 0, 255) -- بنفسجي نيون
-
+        local color1 = Color3.fromRGB(0, 150, 255)
+        local color2 = Color3.fromRGB(150, 0, 255)
         local t1 = TweenService:Create(mainStroke, info, {Color = color1})
         local t2 = TweenService:Create(circStroke, info, {Color = color1})
         t1:Play() t2:Play()
         task.wait(2)
-        
         local t3 = TweenService:Create(mainStroke, info, {Color = color2})
         local t4 = TweenService:Create(circStroke, info, {Color = color2})
         t3:Play() t4:Play()
@@ -106,7 +102,7 @@ task.spawn(function()
     end
 end)
 
---- Logic ---
+--- Logic & Anti-Fling Integration ---
 
 local function applyHooks()
     if hooksApplied then return end
@@ -131,6 +127,26 @@ local function applyHooks()
     end
 end
 
+-- إعدادات Anti-Fling
+local lastSafePosition = CFrame.new()
+local maxVelocity = 150
+
+RunService.Heartbeat:Connect(function()
+    if _G.UltraProtectRunning then
+        local lp = Players.LocalPlayer
+        if lp and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+            local root = lp.Character.HumanoidRootPart
+            if root.Velocity.Magnitude > maxVelocity then
+                root.Velocity = Vector3.new(0, 0, 0)
+                root.RotVelocity = Vector3.new(0, 0, 0)
+                root.CFrame = lastSafePosition
+            else
+                lastSafePosition = root.CFrame
+            end
+        end
+    end
+end)
+
 local function toggleProtect()
     if _G.UltraProtectRunning then
         _G.UltraProtectRunning = false
@@ -145,7 +161,7 @@ local function toggleProtect()
         task.spawn(function()
             while _G.UltraProtectRunning do
                 pcall(function()
-                    local char = game.Players.LocalPlayer.Character
+                    local char = Players.LocalPlayer.Character
                     if char then
                         local hum = char:FindFirstChildOfClass("Humanoid")
                         if hum then hum.Sit = false; hum.PlatformStand = false end
