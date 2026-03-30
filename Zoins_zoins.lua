@@ -210,7 +210,7 @@ local function startSpam(text)
     status.Text = "Spamming..."
     task.spawn(function()
         while spam do
-            for i = 1, 4 do
+            for i = 1, 2 do
                 for _, cmd in pairs(commands) do
                     task.spawn(function() fire(cmd) end)
                 end
