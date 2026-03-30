@@ -1,108 +1,117 @@
--- Zoins Hub - Pure Neon Edition (Integrated Anti-Fling)
-local TweenService = game:GetService("TweenService")
-local RunService = game:GetService("RunService")
-local CoreGui = game:GetService("CoreGui")
+-- Zoins Smart Spam V5 (Integrated Ultra Protect)
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 
-if CoreGui:FindFirstChild("ZoinsHub_NeonPure") then CoreGui.ZoinsHub_NeonPure:Destroy() end
-
-local gui = Instance.new("ScreenGui", CoreGui)
-gui.Name = "ZoinsHub_NeonPure"
-
+local player = Players.LocalPlayer
 _G.UltraProtectRunning = false
 local hooksApplied = false
 
---// الواجهة الرئيسية
+-- UI Setup
+local gui = Instance.new("ScreenGui", game.CoreGui)
+gui.Name = "ZoinsHub_Integrated"
+gui.ResetOnSpawn = false
+
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 220, 0, 160)
-frame.Position = UDim2.new(0.5, -110, 0.4, 0)
-frame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
-frame.BorderSizePixel = 0
+frame.Size = UDim2.new(0, 340, 0, 240) -- تم زيادة الطول قليلاً ليتناسب مع زر الحماية
+frame.Position = UDim2.new(0.5, -170, 0.5, -120)
+frame.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
 frame.Active = true
 frame.Draggable = true
-Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 15)
+Instance.new("UICorner", frame)
 
+-- إضافة خط نيون (Stroke) للجمالية
 local mainStroke = Instance.new("UIStroke", frame)
-mainStroke.Thickness = 2.5
-mainStroke.Color = Color3.fromRGB(80, 0, 255)
-mainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+mainStroke.Thickness = 2
+mainStroke.Color = Color3.fromRGB(0, 255, 170)
 
 local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.new(1, 0, 0, 45)
-title.Text = "Zoins"
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Size = UDim2.new(1, 0, 0, 35)
+title.Text = "Zoins Smart Spam V5 + Protection"
 title.BackgroundTransparency = 1
+title.TextColor3 = Color3.fromRGB(0, 255, 170)
 title.Font = Enum.Font.GothamBold
-title.TextSize = 22
+title.TextSize = 14
 
-local closeBtn = Instance.new("TextButton", frame)
-closeBtn.Size = UDim2.new(0, 30, 0, 30)
-closeBtn.Position = UDim2.new(1, -35, 0, 5)
-closeBtn.BackgroundTransparency = 1
-closeBtn.Text = "×"
-closeBtn.TextColor3 = Color3.fromRGB(255, 50, 50)
-closeBtn.Font = Enum.Font.GothamBold
-closeBtn.TextSize = 24
+local box = Instance.new("TextBox", frame)
+box.Size = UDim2.new(1, -20, 0, 70)
+box.Position = UDim2.new(0, 10, 0, 40)
+box.PlaceholderText = ";logs hb\n;nv hb"
+box.Text = ""
+box.ClearTextOnFocus = false
+box.TextColor3 = Color3.fromRGB(255, 255, 255)
+box.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+box.MultiLine = true
+box.TextXAlignment = Enum.TextXAlignment.Left
+box.TextYAlignment = Enum.TextYAlignment.Top
+Instance.new("UICorner", box)
 
-local copyBtn = Instance.new("TextButton", frame)
-copyBtn.Size = UDim2.new(0.85, 0, 0, 40)
-copyBtn.Position = UDim2.new(0.075, 0, 0.32, 0)
-copyBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-copyBtn.Text = "نسخ"
-copyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-copyBtn.Font = Enum.Font.GothamBold
-copyBtn.TextSize = 18
-Instance.new("UICorner", copyBtn).CornerRadius = UDim.new(0, 10)
-local cStroke = Instance.new("UIStroke", copyBtn)
-cStroke.Color = Color3.fromRGB(0, 150, 255)
-cStroke.Thickness = 1.5
+-- Start Button
+local start = Instance.new("TextButton", frame)
+start.Size = UDim2.new(0.48, -5, 0, 35)
+start.Position = UDim2.new(0, 10, 0, 120)
+start.Text = "Start"
+start.BackgroundColor3 = Color3.fromRGB(0, 200, 120)
+start.TextColor3 = Color3.fromRGB(255, 255, 255)
+start.Font = Enum.Font.GothamBold
+Instance.new("UICorner", start)
 
+-- Stop Button
+local stop = Instance.new("TextButton", frame)
+stop.Size = UDim2.new(0.48, -5, 0, 35)
+stop.Position = UDim2.new(0.52, 0, 0, 120)
+stop.Text = "Stop"
+stop.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
+stop.TextColor3 = Color3.fromRGB(255, 255, 255)
+stop.Font = Enum.Font.GothamBold
+Instance.new("UICorner", stop)
+
+-- Protect Button (الزر الجديد في المنتصف تحتهما)
 local protectBtn = Instance.new("TextButton", frame)
-protectBtn.Size = UDim2.new(0.85, 0, 0, 40)
-protectBtn.Position = UDim2.new(0.075, 0, 0.65, 0)
-protectBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-protectBtn.Text = "حماية"
+protectBtn.Size = UDim2.new(0.96, 0, 0, 35)
+protectBtn.Position = UDim2.new(0.02, 0, 0, 165)
+protectBtn.Text = "تفعيل الحماية"
+protectBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 protectBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 protectBtn.Font = Enum.Font.GothamBold
-protectBtn.TextSize = 18
-Instance.new("UICorner", protectBtn).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", protectBtn)
 local pStroke = Instance.new("UIStroke", protectBtn)
 pStroke.Color = Color3.fromRGB(255, 50, 50)
 pStroke.Thickness = 1.5
 
-local openCircle = Instance.new("TextButton", gui)
-openCircle.Size = UDim2.new(0, 55, 0, 55)
-openCircle.Position = UDim2.new(1, -70, 0.5, -27)
-openCircle.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
-openCircle.Text = "Z"
-openCircle.TextColor3 = Color3.fromRGB(255, 255, 255)
-openCircle.Font = Enum.Font.GothamBold
-openCircle.TextSize = 28
-openCircle.Visible = false
-openCircle.Draggable = true
-Instance.new("UICorner", openCircle).CornerRadius = UDim.new(1, 0)
-local circStroke = Instance.new("UIStroke", openCircle)
-circStroke.Color = Color3.fromRGB(80, 0, 255)
-circStroke.Thickness = 2.5
+local status = Instance.new("TextLabel", frame)
+status.Size = UDim2.new(1, 0, 0, 20)
+status.Position = UDim2.new(0, 0, 1, -25)
+status.BackgroundTransparency = 1
+status.Text = "Idle"
+status.TextColor3 = Color3.fromRGB(200, 200, 200)
 
--- تأثير النيون
-task.spawn(function()
-    while true do
-        local info = TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
-        local color1 = Color3.fromRGB(0, 150, 255)
-        local color2 = Color3.fromRGB(150, 0, 255)
-        local t1 = TweenService:Create(mainStroke, info, {Color = color1})
-        local t2 = TweenService:Create(circStroke, info, {Color = color1})
-        t1:Play() t2:Play()
-        task.wait(2)
-        local t3 = TweenService:Create(mainStroke, info, {Color = color2})
-        local t4 = TweenService:Create(circStroke, info, {Color = color2})
-        t3:Play() t4:Play()
-        task.wait(2)
-    end
-end)
+-- Close Button (X)
+local close = Instance.new("TextButton", frame)
+close.Size = UDim2.new(0, 25, 0, 25)
+close.Position = UDim2.new(1, -30, 0, 5)
+close.Text = "X"
+close.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
+close.TextColor3 = Color3.fromRGB(255, 255, 255)
+close.Font = Enum.Font.GothamBold
+Instance.new("UICorner", close)
 
---- Logic & Anti-Fling Integration ---
+-- Open Circle (Z)
+local circle = Instance.new("TextButton", gui)
+circle.Size = UDim2.new(0, 45, 0, 45)
+circle.Position = UDim2.new(1, -60, 0.5, -25)
+circle.BackgroundColor3 = Color3.fromRGB(0, 200, 120)
+circle.Text = "Z"
+circle.Visible = false
+circle.TextColor3 = Color3.fromRGB(255, 255, 255)
+circle.Font = Enum.Font.GothamBold
+circle.Draggable = true
+Instance.new("UICorner", circle).CornerRadius = UDim.new(1, 0)
+
+---------------------------------------
+-- Logic Section (Anti-Fling & Protection)
+---------------------------------------
 
 local function applyHooks()
     if hooksApplied then return end
@@ -127,16 +136,13 @@ local function applyHooks()
     end
 end
 
--- إعدادات Anti-Fling
 local lastSafePosition = CFrame.new()
-local maxVelocity = 150
-
 RunService.Heartbeat:Connect(function()
     if _G.UltraProtectRunning then
         local lp = Players.LocalPlayer
         if lp and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
             local root = lp.Character.HumanoidRootPart
-            if root.Velocity.Magnitude > maxVelocity then
+            if root.Velocity.Magnitude > 150 then
                 root.Velocity = Vector3.new(0, 0, 0)
                 root.RotVelocity = Vector3.new(0, 0, 0)
                 root.CFrame = lastSafePosition
@@ -150,12 +156,12 @@ end)
 local function toggleProtect()
     if _G.UltraProtectRunning then
         _G.UltraProtectRunning = false
-        protectBtn.Text = "حماية"
+        protectBtn.Text = "تفعيل الحماية"
         pStroke.Color = Color3.fromRGB(255, 50, 50)
     else
         _G.UltraProtectRunning = true
         applyHooks()
-        protectBtn.Text = "حماية (مفعل)"
+        protectBtn.Text = "الحماية تعمل ✅"
         pStroke.Color = Color3.fromRGB(0, 255, 100)
         
         task.spawn(function()
@@ -177,18 +183,46 @@ local function toggleProtect()
     end
 end
 
-copyBtn.MouseButton1Click:Connect(function()
-    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-HD-copying-LOSKY-59113"))()
-end)
+---------------------------------------
+-- Spam Logic (Original)
+---------------------------------------
 
+local spam = false
+local function fire(cmd)
+    pcall(function()
+        ReplicatedStorage.HDAdminHDClient.Signals.CreateLog:FireServer({
+            Message = cmd,
+            Player = player,
+            LogType = "chatLogs"
+        })
+    end)
+    pcall(function()
+        ReplicatedStorage.HDAdminHDClient.Signals.RequestCommandModification:InvokeServer(cmd)
+    end)
+end
+
+local function startSpam(text)
+    local commands = {}
+    for cmd in string.gmatch(text, ";[^;\n]+") do
+        table.insert(commands, cmd)
+    end
+    spam = true
+    status.Text = "Spamming..."
+    task.spawn(function()
+        while spam do
+            for i = 1, 4 do
+                for _, cmd in pairs(commands) do
+                    task.spawn(function() fire(cmd) end)
+                end
+            end
+            task.wait(0.1)
+        end
+    end)
+end
+
+-- Buttons Events
+start.MouseButton1Click:Connect(function() startSpam(box.Text) end)
+stop.MouseButton1Click:Connect(function() spam = false status.Text = "Stopped" end)
 protectBtn.MouseButton1Click:Connect(toggleProtect)
-
-closeBtn.MouseButton1Click:Connect(function()
-    frame.Visible = false
-    openCircle.Visible = true
-end)
-
-openCircle.MouseButton1Click:Connect(function()
-    frame.Visible = true
-    openCircle.Visible = false
-end)
+close.MouseButton1Click:Connect(function() frame.Visible = false circle.Visible = true end)
+circle.MouseButton1Click:Connect(function() frame.Visible = true circle.Visible = false end)
