@@ -1,4 +1,4 @@
--- Zoins Smart Spam V5 (Integrated Ultra Protect)
+-- Zoins Smart Spam V5 (Integrated Ultra Protect) - Updated
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -14,14 +14,13 @@ gui.Name = "ZoinsHub_Integrated"
 gui.ResetOnSpawn = false
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 340, 0, 240) -- تم زيادة الطول قليلاً ليتناسب مع زر الحماية
+frame.Size = UDim2.new(0, 340, 0, 240) 
 frame.Position = UDim2.new(0.5, -170, 0.5, -120)
 frame.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
 frame.Active = true
 frame.Draggable = true
 Instance.new("UICorner", frame)
 
--- إضافة خط نيون (Stroke) للجمالية
 local mainStroke = Instance.new("UIStroke", frame)
 mainStroke.Thickness = 2
 mainStroke.Color = Color3.fromRGB(0, 255, 170)
@@ -37,12 +36,14 @@ title.TextSize = 14
 local box = Instance.new("TextBox", frame)
 box.Size = UDim2.new(1, -20, 0, 70)
 box.Position = UDim2.new(0, 10, 0, 40)
+-- تم إرجاع المثال المفضل لديك هنا
 box.PlaceholderText = ";logs hb\n;nv hb"
 box.Text = ""
 box.ClearTextOnFocus = false
 box.TextColor3 = Color3.fromRGB(255, 255, 255)
 box.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 box.MultiLine = true
+box.TextWrapped = true -- ميزة نزول السطر مفعلة
 box.TextXAlignment = Enum.TextXAlignment.Left
 box.TextYAlignment = Enum.TextYAlignment.Top
 Instance.new("UICorner", box)
@@ -67,7 +68,7 @@ stop.TextColor3 = Color3.fromRGB(255, 255, 255)
 stop.Font = Enum.Font.GothamBold
 Instance.new("UICorner", stop)
 
--- Protect Button (الزر الجديد في المنتصف تحتهما)
+-- Protect Button
 local protectBtn = Instance.new("TextButton", frame)
 protectBtn.Size = UDim2.new(0.96, 0, 0, 35)
 protectBtn.Position = UDim2.new(0.02, 0, 0, 165)
@@ -87,7 +88,6 @@ status.BackgroundTransparency = 1
 status.Text = "Idle"
 status.TextColor3 = Color3.fromRGB(200, 200, 200)
 
--- Close Button (X)
 local close = Instance.new("TextButton", frame)
 close.Size = UDim2.new(0, 25, 0, 25)
 close.Position = UDim2.new(1, -30, 0, 5)
@@ -97,7 +97,6 @@ close.TextColor3 = Color3.fromRGB(255, 255, 255)
 close.Font = Enum.Font.GothamBold
 Instance.new("UICorner", close)
 
--- Open Circle (Z)
 local circle = Instance.new("TextButton", gui)
 circle.Size = UDim2.new(0, 45, 0, 45)
 circle.Position = UDim2.new(1, -60, 0.5, -25)
@@ -184,7 +183,7 @@ local function toggleProtect()
 end
 
 ---------------------------------------
--- Spam Logic (Original)
+-- Spam Logic (Invisible Universal Patch)
 ---------------------------------------
 
 local spam = false
@@ -203,17 +202,20 @@ end
 
 local function startSpam(text)
     local commands = {}
-    for cmd in string.gmatch(text, ";[^;\n]+") do
+    -- يدعم الآن جميع الرموز والأرقام دون تغيير طريقة عمل السكربت
+    for cmd in string.gmatch(text, "%S+") do
         table.insert(commands, cmd)
     end
+    
+    if #commands == 0 then return end
+    
     spam = true
     status.Text = "Spamming..."
     task.spawn(function()
         while spam do
-            for i = 1, 1 do
-                for _, cmd in pairs(commands) do
-                    task.spawn(function() fire(cmd) end)
-                end
+            for _, cmd in pairs(commands) do
+                if not spam then break end
+                task.spawn(function() fire(cmd) end)
             end
             task.wait(1)
         end
