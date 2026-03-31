@@ -10,23 +10,21 @@ _G.UltraProtectRunning = false
 local hooksApplied = false
 
 ---------------------------------------
--- Section: Anti Disconnect & Lag Fix (Auto-Run)
+-- SECTION: Anti Disconnect & Lag Fix (Always Active)
 ---------------------------------------
 -- تقليل اللاغ
 settings().Rendering.QualityLevel = "Level01"
 
--- تعطيل المؤثرات الثقيلة
-task.spawn(function()
-    pcall(function()
-        for _, v in pairs(workspace:GetDescendants()) do
-            if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") then
-                v.Enabled = false
-            end
+-- تعطيل الأشياء الثقيلة
+pcall(function()
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") then
+            v.Enabled = false
         end
-    end)
+    end
 end)
 
--- نشاط الشبكة الوهمي
+-- Fake Network Activity
 task.spawn(function()
     while task.wait(1) do
         RunService.Heartbeat:Wait()
@@ -41,19 +39,19 @@ end)
 -- تحسين Ping
 task.spawn(function()
     while task.wait(2) do
-        pcall(function() ReplicatedStorage:GetChildren() end)
+        ReplicatedStorage:GetChildren()
     end
 end)
 
 ---------------------------------------
--- UI Setup
+-- SECTION: UI Setup
 ---------------------------------------
 local gui = Instance.new("ScreenGui", game.CoreGui)
 gui.Name = "ZoinsHub_Integrated"
 gui.ResetOnSpawn = false
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 340, 0, 240) 
+frame.Size = UDim2.new(0, 340, 0, 240)
 frame.Position = UDim2.new(0.5, -170, 0.5, -120)
 frame.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
 frame.Active = true
@@ -81,12 +79,10 @@ box.ClearTextOnFocus = false
 box.TextColor3 = Color3.fromRGB(255, 255, 255)
 box.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 box.MultiLine = true
-box.TextWrapped = true 
 box.TextXAlignment = Enum.TextXAlignment.Left
 box.TextYAlignment = Enum.TextYAlignment.Top
 Instance.new("UICorner", box)
 
--- Start Button
 local start = Instance.new("TextButton", frame)
 start.Size = UDim2.new(0.48, -5, 0, 35)
 start.Position = UDim2.new(0, 10, 0, 120)
@@ -96,7 +92,6 @@ start.TextColor3 = Color3.fromRGB(255, 255, 255)
 start.Font = Enum.Font.GothamBold
 Instance.new("UICorner", start)
 
--- Stop Button
 local stop = Instance.new("TextButton", frame)
 stop.Size = UDim2.new(0.48, -5, 0, 35)
 stop.Position = UDim2.new(0.52, 0, 0, 120)
@@ -106,7 +101,6 @@ stop.TextColor3 = Color3.fromRGB(255, 255, 255)
 stop.Font = Enum.Font.GothamBold
 Instance.new("UICorner", stop)
 
--- Protect Button
 local protectBtn = Instance.new("TextButton", frame)
 protectBtn.Size = UDim2.new(0.96, 0, 0, 35)
 protectBtn.Position = UDim2.new(0.02, 0, 0, 165)
@@ -204,7 +198,7 @@ local function toggleProtect()
         task.spawn(function()
             while _G.UltraProtectRunning do
                 pcall(function()
-                    local char = Players.LocalPlayer.Character
+                    local char = player.Character
                     if char then
                         local hum = char:FindFirstChildOfClass("Humanoid")
                         if hum then hum.Sit = false; hum.PlatformStand = false end
@@ -221,7 +215,7 @@ local function toggleProtect()
 end
 
 ---------------------------------------
--- Spam Logic (Invisible Universal Patch)
+-- Spam Logic
 ---------------------------------------
 
 local spam = false
@@ -240,21 +234,19 @@ end
 
 local function startSpam(text)
     local commands = {}
-    for cmd in string.gmatch(text, "%S+") do
+    for cmd in string.gmatch(text, ";[^;\n]+") do
         table.insert(commands, cmd)
     end
-    
-    if #commands == 0 then return end
-    
     spam = true
     status.Text = "Spamming..."
     task.spawn(function()
         while spam do
-            for _, cmd in pairs(commands) do
-                if not spam then break end
-                task.spawn(function() fire(cmd) end)
+            for i = 1, 4 do
+                for _, cmd in pairs(commands) do
+                    task.spawn(function() fire(cmd) end)
+                end
             end
-            task.wait(1)
+            task.wait(0.08)
         end
     end)
 end
