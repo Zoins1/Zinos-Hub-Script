@@ -1,14 +1,53 @@
--- Zoins Smart Spam V5 (Integrated Ultra Protect) - Updated
+-- Zoins Smart Spam V5 (Integrated Ultra Protect & Anti Disconnect)
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
+local Stats = game:GetService("Stats")
 
 local player = Players.LocalPlayer
 _G.UltraProtectRunning = false
 local hooksApplied = false
 
+---------------------------------------
+-- Section: Anti Disconnect & Lag Fix (Auto-Run)
+---------------------------------------
+-- تقليل اللاغ
+settings().Rendering.QualityLevel = "Level01"
+
+-- تعطيل المؤثرات الثقيلة
+task.spawn(function()
+    pcall(function()
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") then
+                v.Enabled = false
+            end
+        end
+    end)
+end)
+
+-- نشاط الشبكة الوهمي
+task.spawn(function()
+    while task.wait(1) do
+        RunService.Heartbeat:Wait()
+    end
+end)
+
+-- منع الـ Idle (Anti-AFK)
+player.Idled:Connect(function()
+    game:GetService("VirtualUser"):ClickButton2(Vector2.new())
+end)
+
+-- تحسين Ping
+task.spawn(function()
+    while task.wait(2) do
+        pcall(function() ReplicatedStorage:GetChildren() end)
+    end
+end)
+
+---------------------------------------
 -- UI Setup
+---------------------------------------
 local gui = Instance.new("ScreenGui", game.CoreGui)
 gui.Name = "ZoinsHub_Integrated"
 gui.ResetOnSpawn = false
@@ -36,14 +75,13 @@ title.TextSize = 14
 local box = Instance.new("TextBox", frame)
 box.Size = UDim2.new(1, -20, 0, 70)
 box.Position = UDim2.new(0, 10, 0, 40)
--- تم إرجاع المثال المفضل لديك هنا
 box.PlaceholderText = ";logs hb\n;nv hb"
 box.Text = ""
 box.ClearTextOnFocus = false
 box.TextColor3 = Color3.fromRGB(255, 255, 255)
 box.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 box.MultiLine = true
-box.TextWrapped = true -- ميزة نزول السطر مفعلة
+box.TextWrapped = true 
 box.TextXAlignment = Enum.TextXAlignment.Left
 box.TextYAlignment = Enum.TextYAlignment.Top
 Instance.new("UICorner", box)
@@ -202,7 +240,6 @@ end
 
 local function startSpam(text)
     local commands = {}
-    -- يدعم الآن جميع الرموز والأرقام دون تغيير طريقة عمل السكربت
     for cmd in string.gmatch(text, "%S+") do
         table.insert(commands, cmd)
     end
