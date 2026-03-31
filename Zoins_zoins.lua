@@ -15,32 +15,19 @@ local hooksApplied = false
 -- تقليل اللاغ
 settings().Rendering.QualityLevel = "Level01"
 
--- تعطيل الأشياء الثقيلة
-pcall(function()
+-- تعطيل الأشياء الثقيلة (تعديل: نسخة أخف)
+task.spawn(function()
     for _, v in pairs(workspace:GetDescendants()) do
-        if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") then
+        if v:IsA("ParticleEmitter") or v:IsA("Trail") then
             v.Enabled = false
         end
-    end
-end)
-
--- Fake Network Activity
-task.spawn(function()
-    while task.wait(1) do
-        RunService.Heartbeat:Wait()
+        task.wait()
     end
 end)
 
 -- منع الـ Idle (Anti-AFK)
 player.Idled:Connect(function()
     game:GetService("VirtualUser"):ClickButton2(Vector2.new())
-end)
-
--- تحسين Ping
-task.spawn(function()
-    while task.wait(2) do
-        ReplicatedStorage:GetChildren()
-    end
 end)
 
 ---------------------------------------
