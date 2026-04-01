@@ -1,4 +1,4 @@
--- Zoins Smart Spam V5 (Integrated Ultra Protect & Anti Disconnect)
+-- Zoins Smart Spam V5 (Modified: Fling Protection Removed)
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -12,10 +12,8 @@ local hooksApplied = false
 ---------------------------------------
 -- SECTION: Anti Disconnect & Lag Fix (Always Active)
 ---------------------------------------
--- تقليل اللاغ
 settings().Rendering.QualityLevel = "Level01"
 
--- تعطيل الأشياء الثقيلة (تعديل: نسخة أخف)
 task.spawn(function()
     for _, v in pairs(workspace:GetDescendants()) do
         if v:IsA("ParticleEmitter") or v:IsA("Trail") then
@@ -25,7 +23,6 @@ task.spawn(function()
     end
 end)
 
--- منع الـ Idle (Anti-AFK)
 player.Idled:Connect(function()
     game:GetService("VirtualUser"):ClickButton2(Vector2.new())
 end)
@@ -128,7 +125,7 @@ circle.Draggable = true
 Instance.new("UICorner", circle).CornerRadius = UDim.new(1, 0)
 
 ---------------------------------------
--- Logic Section (Anti-Fling & Protection)
+-- Logic Section (Hooks & Anti-Stun)
 ---------------------------------------
 
 local function applyHooks()
@@ -154,22 +151,7 @@ local function applyHooks()
     end
 end
 
-local lastSafePosition = CFrame.new()
-RunService.Heartbeat:Connect(function()
-    if _G.UltraProtectRunning then
-        local lp = Players.LocalPlayer
-        if lp and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
-            local root = lp.Character.HumanoidRootPart
-            if root.Velocity.Magnitude > 150 then
-                root.Velocity = Vector3.new(0, 0, 0)
-                root.RotVelocity = Vector3.new(0, 0, 0)
-                root.CFrame = lastSafePosition
-            else
-                lastSafePosition = root.CFrame
-            end
-        end
-    end
-end)
+-- تم إزالة كود الـ Heartbeat المسؤول عن منع الـ Fling عبر الـ Velocity
 
 local function toggleProtect()
     if _G.UltraProtectRunning then
@@ -188,8 +170,12 @@ local function toggleProtect()
                     local char = player.Character
                     if char then
                         local hum = char:FindFirstChildOfClass("Humanoid")
-                        if hum then hum.Sit = false; hum.PlatformStand = false end
+                        if hum then 
+                            hum.Sit = false 
+                            hum.PlatformStand = false 
+                        end
                         for _, p in pairs(char:GetDescendants()) do
+                            -- إبقاء الحماية ضد الـ Anchored والـ BodyMovers (أدوات التحكم)
                             if p:IsA("BasePart") then p.Anchored = false end
                             if p:IsA("BodyMover") then p:Destroy() end
                         end
@@ -228,7 +214,7 @@ local function startSpam(text)
     status.Text = "Spamming..."
     task.spawn(function()
         while spam do
-            for i = 1, 2 do
+            for i = 1, 3 do
                 for _, cmd in pairs(commands) do
                     task.spawn(function() fire(cmd) end)
                 end
