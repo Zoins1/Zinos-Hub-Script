@@ -219,7 +219,7 @@ local function startSpam(text)
                     task.spawn(function() fire(cmd) end)
                 end
             end
-            task.wait(0.1)
+            task.wait(1)
         end
     end)
 end
