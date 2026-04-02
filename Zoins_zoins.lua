@@ -1,134 +1,211 @@
--- Zoins Smart Spam V5 (Optimized & Fixed)
+-- Zoins Hub - Final Mega Edition (Fixed UI & Status)
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
-local Stats = game:GetService("Stats")
 
 local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
-_G.UltraProtectRunning = false
+
+-- إزالة النسخ السابقة
+if CoreGui:FindFirstChild("ZoinsHub_Final") then CoreGui.ZoinsHub_Final:Destroy() end
+
+local gui = Instance.new("ScreenGui", CoreGui)
+gui.Name = "ZoinsHub_Final"
+
+-- متغيرات التحكم
+_G.DefenseActive = false
+_G.AlertsActive = false
+_G.FlingActive = false
 local hooksApplied = false
-local msgConnection = nil 
+local spamActive = false
 
 ---------------------------------------
--- SECTION: Anti Disconnect & Lag Fix
+-- وظائف المساعدة (UI Helpers)
 ---------------------------------------
-settings().Rendering.QualityLevel = "Level01"
+local function createCorner(parent, radius)
+    local corner = Instance.new("UICorner", parent)
+    corner.CornerRadius = UDim.new(0, radius or 10)
+end
 
-task.spawn(function()
-    for _, v in pairs(workspace:GetDescendants()) do
-        if v:IsA("ParticleEmitter") or v:IsA("Trail") then
-            v.Enabled = false
-        end
-    end
-end)
-
-player.Idled:Connect(function()
-    game:GetService("VirtualUser"):ClickButton2(Vector2.new())
-end)
+local function createStroke(parent, color, thickness)
+    local stroke = Instance.new("UIStroke", parent)
+    stroke.Color = color
+    stroke.Thickness = thickness or 1.5
+    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    return stroke
+end
 
 ---------------------------------------
--- SECTION: UI Setup
+-- الدائرة العائمة (Z)
 ---------------------------------------
-local gui = Instance.new("ScreenGui", game.CoreGui)
-gui.Name = "ZoinsHub_Integrated"
-gui.ResetOnSpawn = false
+local openCircle = Instance.new("TextButton", gui)
+openCircle.Size = UDim2.new(0, 55, 0, 55)
+openCircle.Position = UDim2.new(1, -70, 0.5, -27)
+openCircle.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
+openCircle.Text = "Z"
+openCircle.TextColor3 = Color3.fromRGB(255, 255, 255)
+openCircle.Visible = false
+openCircle.Draggable = true
+openCircle.Font = Enum.Font.GothamBold
+openCircle.TextSize = 28
+createCorner(openCircle, 30)
+local circStroke = createStroke(openCircle, Color3.fromRGB(80, 0, 255), 2.5)
 
-local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 340, 0, 240)
-frame.Position = UDim2.new(0.5, -170, 0.5, -120)
-frame.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
-frame.Active = true
-frame.Draggable = true
-Instance.new("UICorner", frame)
+---------------------------------------
+-- واجهة السبام (Spam UI)
+---------------------------------------
+local spamFrame = Instance.new("Frame", gui)
+spamFrame.Size = UDim2.new(0, 300, 0, 200)
+spamFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+spamFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
+spamFrame.Visible = false
+spamFrame.Active = true
+spamFrame.Draggable = true
+createCorner(spamFrame, 15)
+local sStroke = createStroke(spamFrame, Color3.fromRGB(0, 255, 170), 2.5)
 
-local mainStroke = Instance.new("UIStroke", frame)
-mainStroke.Thickness = 2
-mainStroke.Color = Color3.fromRGB(0, 255, 170)
+local sTitle = Instance.new("TextLabel", spamFrame)
+sTitle.Size = UDim2.new(1, 0, 0, 35)
+sTitle.Text = "Zoins Smart Spam V5"
+sTitle.TextColor3 = Color3.fromRGB(0, 255, 170)
+sTitle.BackgroundTransparency = 1
+sTitle.Font = Enum.Font.GothamBold
 
-local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.new(1, 0, 0, 35)
-title.Text = "Zoins Smart Spam V5 + Protection"
-title.BackgroundTransparency = 1
-title.TextColor3 = Color3.fromRGB(0, 255, 170)
-title.Font = Enum.Font.GothamBold
-title.TextSize = 14
-
-local box = Instance.new("TextBox", frame)
+local box = Instance.new("TextBox", spamFrame)
 box.Size = UDim2.new(1, -20, 0, 70)
 box.Position = UDim2.new(0, 10, 0, 40)
 box.PlaceholderText = ";logs hb\n;nv hb"
 box.Text = ""
-box.ClearTextOnFocus = false
 box.TextColor3 = Color3.fromRGB(255, 255, 255)
-box.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+box.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
 box.MultiLine = true
-box.TextXAlignment = Enum.TextXAlignment.Left
-box.TextYAlignment = Enum.TextYAlignment.Top
-Instance.new("UICorner", box)
+box.ClearTextOnFocus = false
+createCorner(box, 8)
 
-local start = Instance.new("TextButton", frame)
-start.Size = UDim2.new(0.48, -5, 0, 35)
-start.Position = UDim2.new(0, 10, 0, 120)
-start.Text = "Start"
-start.BackgroundColor3 = Color3.fromRGB(0, 200, 120)
-start.TextColor3 = Color3.fromRGB(255, 255, 255)
-start.Font = Enum.Font.GothamBold
-Instance.new("UICorner", start)
+local startBtn = Instance.new("TextButton", spamFrame)
+startBtn.Size = UDim2.new(0.45, 0, 0, 35)
+startBtn.Position = UDim2.new(0.04, 0, 0, 120)
+startBtn.Text = "Start"
+startBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 100)
+startBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+createCorner(startBtn, 8)
 
-local stop = Instance.new("TextButton", frame)
-stop.Size = UDim2.new(0.48, -5, 0, 35)
-stop.Position = UDim2.new(0.52, 0, 0, 120)
-stop.Text = "Stop"
-stop.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
-stop.TextColor3 = Color3.fromRGB(255, 255, 255)
-stop.Font = Enum.Font.GothamBold
-Instance.new("UICorner", stop)
+local stopBtn = Instance.new("TextButton", spamFrame)
+stopBtn.Size = UDim2.new(0.45, 0, 0, 35)
+stopBtn.Position = UDim2.new(0.51, 0, 0, 120)
+stopBtn.Text = "Stop"
+stopBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+stopBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+createCorner(stopBtn, 8)
 
-local protectBtn = Instance.new("TextButton", frame)
-protectBtn.Size = UDim2.new(0.96, 0, 0, 35)
-protectBtn.Position = UDim2.new(0.02, 0, 0, 165)
-protectBtn.Text = "تفعيل الحماية"
-protectBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-protectBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-protectBtn.Font = Enum.Font.GothamBold
-Instance.new("UICorner", protectBtn)
-local pStroke = Instance.new("UIStroke", protectBtn)
-pStroke.Color = Color3.fromRGB(255, 50, 50)
-pStroke.Thickness = 1.5
+-- شريط الحالة (Status) المطلوب
+local statusLbl = Instance.new("TextLabel", spamFrame)
+statusLbl.Size = UDim2.new(1, 0, 0, 20)
+statusLbl.Position = UDim2.new(0, 0, 1, -25)
+statusLbl.BackgroundTransparency = 1
+statusLbl.Text = "Idle"
+statusLbl.TextColor3 = Color3.fromRGB(150, 150, 150)
+statusLbl.Font = Enum.Font.Gotham
 
-local status = Instance.new("TextLabel", frame)
-status.Size = UDim2.new(1, 0, 0, 20)
-status.Position = UDim2.new(0, 0, 1, -25)
-status.BackgroundTransparency = 1
-status.Text = "Idle"
-status.TextColor3 = Color3.fromRGB(200, 200, 200)
-
-local close = Instance.new("TextButton", frame)
-close.Size = UDim2.new(0, 25, 0, 25)
-close.Position = UDim2.new(1, -30, 0, 5)
-close.Text = "X"
-close.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
-close.TextColor3 = Color3.fromRGB(255, 255, 255)
-close.Font = Enum.Font.GothamBold
-Instance.new("UICorner", close)
-
-local circle = Instance.new("TextButton", gui)
-circle.Size = UDim2.new(0, 45, 0, 45)
-circle.Position = UDim2.new(1, -60, 0.5, -25)
-circle.BackgroundColor3 = Color3.fromRGB(0, 200, 120)
-circle.Text = "Z"
-circle.Visible = false
-circle.TextColor3 = Color3.fromRGB(255, 255, 255)
-circle.Font = Enum.Font.GothamBold
-circle.Draggable = true
-Instance.new("UICorner", circle).CornerRadius = UDim.new(1, 0)
+local sClose = Instance.new("TextButton", spamFrame)
+sClose.Size = UDim2.new(0, 25, 0, 25)
+sClose.Position = UDim2.new(1, -30, 0, 5)
+sClose.Text = "X"
+sClose.TextColor3 = Color3.fromRGB(255, 80, 80)
+sClose.BackgroundTransparency = 1
+sClose.TextSize = 20
 
 ---------------------------------------
--- Logic Section (Fixed Protection)
+-- واجهة الحماية (Protection UI)
 ---------------------------------------
+local protectFrame = Instance.new("Frame", gui)
+protectFrame.Size = UDim2.new(0, 230, 0, 220)
+protectFrame.Position = UDim2.new(0.5, -115, 0.4, 0)
+protectFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
+protectFrame.Visible = false
+protectFrame.Active = true
+protectFrame.Draggable = true
+createCorner(protectFrame, 15)
+local pMainStroke = createStroke(protectFrame, Color3.fromRGB(80, 0, 255), 2.5)
 
+local pTitle = Instance.new("TextLabel", protectFrame)
+pTitle.Size = UDim2.new(1, 0, 0, 40)
+pTitle.Text = "Security Center"
+pTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+pTitle.BackgroundTransparency = 1
+pTitle.Font = Enum.Font.GothamBold
+
+local function createToggle(name, pos, callback, fontSize)
+    local btn = Instance.new("TextButton", protectFrame)
+    btn.Size = UDim2.new(0.9, 0, 0, 35)
+    btn.Position = UDim2.new(0.05, 0, 0, pos)
+    btn.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+    btn.Text = name
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextSize = fontSize or 14
+    btn.Font = Enum.Font.GothamBold
+    createCorner(btn, 10)
+    local st = createStroke(btn, Color3.fromRGB(255, 50, 50), 1.5)
+    
+    local active = false
+    btn.MouseButton1Click:Connect(function()
+        active = not active
+        st.Color = active and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(255, 50, 50)
+        callback(active)
+    end)
+    return btn
+end
+
+---------------------------------------
+-- الواجهة الرئيسية (Main Hub)
+---------------------------------------
+local mainFrame = Instance.new("Frame", gui)
+mainFrame.Size = UDim2.new(0, 220, 0, 160)
+mainFrame.Position = UDim2.new(0.5, -110, 0.4, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
+mainFrame.Active = true
+mainFrame.Draggable = true
+createCorner(mainFrame, 15)
+local mStroke = createStroke(mainFrame, Color3.fromRGB(80, 0, 255), 2.5)
+
+local title = Instance.new("TextLabel", mainFrame)
+title.Size = UDim2.new(1, 0, 0, 45)
+title.Text = "Zoins"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.TextSize = 22
+
+local copyBtn = Instance.new("TextButton", mainFrame)
+copyBtn.Size = UDim2.new(0.85, 0, 0, 40)
+copyBtn.Position = UDim2.new(0.075, 0, 0.32, 0)
+copyBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+copyBtn.Text = "نسخ (Spam)"
+copyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+createCorner(copyBtn, 10)
+createStroke(copyBtn, Color3.fromRGB(0, 150, 255), 1.5)
+
+local openProtectBtn = Instance.new("TextButton", mainFrame)
+openProtectBtn.Size = UDim2.new(0.85, 0, 0, 40)
+openProtectBtn.Position = UDim2.new(0.075, 0, 0.65, 0)
+openProtectBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+openProtectBtn.Text = "حماية"
+openProtectBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+createCorner(openProtectBtn, 10)
+createStroke(openProtectBtn, Color3.fromRGB(255, 50, 50), 1.5)
+
+local mClose = Instance.new("TextButton", mainFrame)
+mClose.Size = UDim2.new(0, 30, 0, 30)
+mClose.Position = UDim2.new(1, -35, 0, 5)
+mClose.Text = "×"
+mClose.TextColor3 = Color3.fromRGB(255, 50, 50)
+mClose.BackgroundTransparency = 1
+mClose.TextSize = 24
+
+---------------------------------------
+-- منطق الحماية (Defense Logic)
+---------------------------------------
 local function applyHooks()
     if hooksApplied then return end
     hooksApplied = true
@@ -141,7 +218,7 @@ local function applyHooks()
                 for _, word in pairs(blocked) do
                     if name:find(word) then
                         local old; old = hookfunction(f, function(...)
-                            if _G.UltraProtectRunning then return nil end
+                            if _G.DefenseActive then return nil end
                             return old(...)
                         end)
                         break
@@ -152,64 +229,17 @@ local function applyHooks()
     end
 end
 
-local function toggleProtect()
-    if _G.UltraProtectRunning then
-        _G.UltraProtectRunning = false
-        protectBtn.Text = "تفعيل الحماية"
-        pStroke.Color = Color3.fromRGB(255, 50, 50)
-        
-        -- إيقاف الاتصال فوراً لمنع التجميد
-        if msgConnection then 
-            msgConnection:Disconnect() 
-            msgConnection = nil 
-        end
-
-        -- إظهار الواجهات فوراً
-        task.spawn(function()
-            for _, g in pairs(playerGui:GetChildren()) do
-                if g.Name == "HDAdminGui" or g.Name == "MessageGui" then
-                    g.Enabled = true
-                end
-            end
-        end)
-    else
-        _G.UltraProtectRunning = true
+createToggle("Defense/حماية Clogs logs nv", 45, function(state)
+    _G.DefenseActive = state
+    if state then 
         applyHooks()
-        protectBtn.Text = "الحماية تعمل ✅"
-        pStroke.Color = Color3.fromRGB(0, 255, 100)
-        
-        -- إخفاء الواجهات الموجودة
-        for _, g in pairs(playerGui:GetChildren()) do
-            if g.Name == "HDAdminGui" or g.Name == "MessageGui" then
-                g.Enabled = false
-            end
-        end
-            
-        -- مراقبة ذكية للرسائل الجديدة (محسنة للأداء)
-        msgConnection = playerGui.DescendantAdded:Connect(function(descendant)
-            if not _G.UltraProtectRunning then return end
-            
-            if descendant.Name == "HDAdminGui" or descendant.Name == "MessageGui" then
-                descendant.Enabled = false
-            elseif descendant:IsA("TextLabel") and (descendant.Text:find("System") or descendant.Text:find("too fast")) then
-                local container = descendant.Parent
-                if container and container:IsA("Frame") then
-                    container.Visible = false 
-                end
-            end
-        end)
-
-        -- حلقة الحماية من الـ Stun / Anchored
         task.spawn(function()
-            while _G.UltraProtectRunning do
+            while _G.DefenseActive do
                 pcall(function()
                     local char = player.Character
                     if char then
                         local hum = char:FindFirstChildOfClass("Humanoid")
-                        if hum then 
-                            if hum.Sit then hum.Sit = false end
-                            if hum.PlatformStand then hum.PlatformStand = false end
-                        end
+                        if hum then hum.Sit = false; hum.PlatformStand = false end
                         for _, p in pairs(char:GetChildren()) do
                             if p:IsA("BasePart") and p.Anchored then p.Anchored = false end
                             if p:IsA("BodyMover") or p:IsA("BodyVelocity") or p:IsA("BodyGyro") then p:Destroy() end
@@ -220,49 +250,124 @@ local function toggleProtect()
             end
         end)
     end
-end
+end, 11)
+
+createToggle("Alerts/تنبيهات SYSTEM", 90, function(state)
+    _G.AlertsActive = state
+    if state then
+        for _, g in pairs(player.PlayerGui:GetChildren()) do
+            if g.Name == "HDAdminGui" or g.Name == "MessageGui" then g.Enabled = false end
+        end
+    else
+        for _, g in pairs(player.PlayerGui:GetChildren()) do
+            if g.Name == "HDAdminGui" or g.Name == "MessageGui" then g.Enabled = true end
+        end
+    end
+end)
+
+player.PlayerGui.DescendantAdded:Connect(function(desc)
+    if _G.AlertsActive then
+        if desc.Name == "HDAdminGui" or desc.Name == "MessageGui" then
+            desc.Enabled = false
+        elseif desc:IsA("TextLabel") and (desc.Text:find("System") or desc.Text:find("too fast")) then
+            local container = desc.Parent
+            if container and container:IsA("Frame") then container.Visible = false end
+        end
+    end
+end)
+
+local lastSafePos = nil
+createToggle("Fling/حماية الطيران", 135, function(state)
+    _G.FlingActive = state
+end)
+
+RunService.Heartbeat:Connect(function()
+    if _G.FlingActive and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local hrp = player.Character.HumanoidRootPart
+        if hrp.Velocity.Magnitude > 150 then
+            hrp.Velocity = Vector3.new(0,0,0)
+            hrp.RotVelocity = Vector3.new(0,0,0)
+            if lastSafePos then hrp.CFrame = lastSafePos end
+        else
+            lastSafePos = hrp.CFrame
+        end
+    end
+end)
 
 ---------------------------------------
--- Spam Logic
+-- منطق السبام (Spam Logic)
 ---------------------------------------
-
-local spam = false
-local function fire(cmd)
+local function fireSpam(cmd)
     pcall(function()
-        ReplicatedStorage.HDAdminHDClient.Signals.CreateLog:FireServer({
-            Message = cmd,
-            Player = player,
-            LogType = "chatLogs"
-        })
+        ReplicatedStorage.HDAdminHDClient.Signals.CreateLog:FireServer({Message = cmd, Player = player, LogType = "chatLogs"})
     end)
     pcall(function()
         ReplicatedStorage.HDAdminHDClient.Signals.RequestCommandModification:InvokeServer(cmd)
     end)
 end
 
-local function startSpam(text)
-    local commands = {}
-    for cmd in string.gmatch(text, ";[^;\n]+") do
-        table.insert(commands, cmd)
-    end
-    if #commands == 0 then return end
-    spam = true
-    status.Text = "Spamming..."
+startBtn.MouseButton1Click:Connect(function()
+    local cmds = {}
+    for c in string.gmatch(box.Text, ";[^;\n]+") do table.insert(cmds, c) end
+    if #cmds == 0 then return end
+    spamActive = true
+    statusLbl.Text = "Spamming..."
+    statusLbl.TextColor3 = Color3.fromRGB(0, 255, 100) -- اللون الأخضر عند النسخ
     task.spawn(function()
-        while spam do
-            for i = 1, 3 do
-                for _, cmd in pairs(commands) do
-                    task.spawn(function() fire(cmd) end)
-                end
-            end
+        while spamActive do
+            for i=1,3 do for _,c in pairs(cmds) do if not spamActive then break end task.spawn(function() fireSpam(c) end) end end
             task.wait(1)
         end
     end)
-end
+end)
 
--- Buttons Events
-start.MouseButton1Click:Connect(function() startSpam(box.Text) end)
-stop.MouseButton1Click:Connect(function() spam = false status.Text = "Stopped" end)
-protectBtn.MouseButton1Click:Connect(toggleProtect)
-close.MouseButton1Click:Connect(function() frame.Visible = false circle.Visible = true end)
-circle.MouseButton1Click:Connect(function() frame.Visible = true circle.Visible = false end)
+stopBtn.MouseButton1Click:Connect(function() 
+    spamActive = false 
+    statusLbl.Text = "Stopped"
+    statusLbl.TextColor3 = Color3.fromRGB(200, 50, 50)
+end)
+
+---------------------------------------
+-- التحكم في النوافذ (Window Logic)
+---------------------------------------
+-- زر X في الحماية يغلق الواجهة ويظهر Z
+local pClose = Instance.new("TextButton", protectFrame)
+pClose.Size = UDim2.new(0, 25, 0, 25)
+pClose.Position = UDim2.new(1, -30, 0, 5)
+pClose.Text = "×"
+pClose.TextColor3 = Color3.fromRGB(255, 50, 50)
+pClose.BackgroundTransparency = 1
+pClose.TextSize = 20
+pClose.MouseButton1Click:Connect(function()
+    protectFrame.Visible = false
+    openCircle.Visible = true
+end)
+
+copyBtn.MouseButton1Click:Connect(function() spamFrame.Visible = true; mainFrame.Visible = false end)
+openProtectBtn.MouseButton1Click:Connect(function() protectFrame.Visible = true; mainFrame.Visible = false end)
+mClose.MouseButton1Click:Connect(function() mainFrame.Visible = false; openCircle.Visible = true end)
+sClose.MouseButton1Click:Connect(function() spamFrame.Visible = false; openCircle.Visible = true end)
+
+-- الضغط على Z يفتح الواجهة الرئيسية دائماً
+openCircle.MouseButton1Click:Connect(function() 
+    mainFrame.Visible = true
+    spamFrame.Visible = false
+    protectFrame.Visible = false
+    openCircle.Visible = false 
+end)
+
+-- تأثير نبض النيون
+task.spawn(function()
+    while true do
+        local info = TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+        local c1, c2 = Color3.fromRGB(0, 150, 255), Color3.fromRGB(150, 0, 255)
+        TweenService:Create(mStroke, info, {Color = c1}):Play()
+        TweenService:Create(circStroke, info, {Color = c1}):Play()
+        TweenService:Create(pMainStroke, info, {Color = c1}):Play()
+        task.wait(2)
+        TweenService:Create(mStroke, info, {Color = c2}):Play()
+        TweenService:Create(circStroke, info, {Color = c2}):Play()
+        TweenService:Create(pMainStroke, info, {Color = c2}):Play()
+        task.wait(2)
+    end
+end)
