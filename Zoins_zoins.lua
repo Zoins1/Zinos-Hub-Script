@@ -1,4 +1,4 @@
--- Zoins Smart Spam V5 (Modified: Fling Protection Removed)
+-- Zoins Smart Spam V5 (Optimized & Fixed)
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -6,11 +6,13 @@ local TweenService = game:GetService("TweenService")
 local Stats = game:GetService("Stats")
 
 local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 _G.UltraProtectRunning = false
 local hooksApplied = false
+local msgConnection = nil 
 
 ---------------------------------------
--- SECTION: Anti Disconnect & Lag Fix (Always Active)
+-- SECTION: Anti Disconnect & Lag Fix
 ---------------------------------------
 settings().Rendering.QualityLevel = "Level01"
 
@@ -19,7 +21,6 @@ task.spawn(function()
         if v:IsA("ParticleEmitter") or v:IsA("Trail") then
             v.Enabled = false
         end
-        task.wait()
     end
 end)
 
@@ -125,7 +126,7 @@ circle.Draggable = true
 Instance.new("UICorner", circle).CornerRadius = UDim.new(1, 0)
 
 ---------------------------------------
--- Logic Section (Hooks & Anti-Stun)
+-- Logic Section (Fixed Protection)
 ---------------------------------------
 
 local function applyHooks()
@@ -151,19 +152,54 @@ local function applyHooks()
     end
 end
 
--- تم إزالة كود الـ Heartbeat المسؤول عن منع الـ Fling عبر الـ Velocity
-
 local function toggleProtect()
     if _G.UltraProtectRunning then
         _G.UltraProtectRunning = false
         protectBtn.Text = "تفعيل الحماية"
         pStroke.Color = Color3.fromRGB(255, 50, 50)
+        
+        -- إيقاف الاتصال فوراً لمنع التجميد
+        if msgConnection then 
+            msgConnection:Disconnect() 
+            msgConnection = nil 
+        end
+
+        -- إظهار الواجهات فوراً
+        task.spawn(function()
+            for _, g in pairs(playerGui:GetChildren()) do
+                if g.Name == "HDAdminGui" or g.Name == "MessageGui" then
+                    g.Enabled = true
+                end
+            end
+        end)
     else
         _G.UltraProtectRunning = true
         applyHooks()
         protectBtn.Text = "الحماية تعمل ✅"
         pStroke.Color = Color3.fromRGB(0, 255, 100)
         
+        -- إخفاء الواجهات الموجودة
+        for _, g in pairs(playerGui:GetChildren()) do
+            if g.Name == "HDAdminGui" or g.Name == "MessageGui" then
+                g.Enabled = false
+            end
+        end
+            
+        -- مراقبة ذكية للرسائل الجديدة (محسنة للأداء)
+        msgConnection = playerGui.DescendantAdded:Connect(function(descendant)
+            if not _G.UltraProtectRunning then return end
+            
+            if descendant.Name == "HDAdminGui" or descendant.Name == "MessageGui" then
+                descendant.Enabled = false
+            elseif descendant:IsA("TextLabel") and (descendant.Text:find("System") or descendant.Text:find("too fast")) then
+                local container = descendant.Parent
+                if container and container:IsA("Frame") then
+                    container.Visible = false 
+                end
+            end
+        end)
+
+        -- حلقة الحماية من الـ Stun / Anchored
         task.spawn(function()
             while _G.UltraProtectRunning do
                 pcall(function()
@@ -171,17 +207,16 @@ local function toggleProtect()
                     if char then
                         local hum = char:FindFirstChildOfClass("Humanoid")
                         if hum then 
-                            hum.Sit = false 
-                            hum.PlatformStand = false 
+                            if hum.Sit then hum.Sit = false end
+                            if hum.PlatformStand then hum.PlatformStand = false end
                         end
-                        for _, p in pairs(char:GetDescendants()) do
-                            -- إبقاء الحماية ضد الـ Anchored والـ BodyMovers (أدوات التحكم)
-                            if p:IsA("BasePart") then p.Anchored = false end
-                            if p:IsA("BodyMover") then p:Destroy() end
+                        for _, p in pairs(char:GetChildren()) do
+                            if p:IsA("BasePart") and p.Anchored then p.Anchored = false end
+                            if p:IsA("BodyMover") or p:IsA("BodyVelocity") or p:IsA("BodyGyro") then p:Destroy() end
                         end
                     end
                 end)
-                task.wait(0.5)
+                task.wait(0.3)
             end
         end)
     end
@@ -210,16 +245,17 @@ local function startSpam(text)
     for cmd in string.gmatch(text, ";[^;\n]+") do
         table.insert(commands, cmd)
     end
+    if #commands == 0 then return end
     spam = true
     status.Text = "Spamming..."
     task.spawn(function()
         while spam do
-            for i = 1, 3 do
+            for i = 1, 2 do
                 for _, cmd in pairs(commands) do
                     task.spawn(function() fire(cmd) end)
                 end
             end
-            task.wait(1)
+            task.wait(0.1)
         end
     end)
 end
