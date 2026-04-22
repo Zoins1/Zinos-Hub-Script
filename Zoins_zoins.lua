@@ -1,4 +1,4 @@
--- Zoins Hub - Final Mega Edition (Fixed UI & Status)
+-- Zoins Hub - Final Mega Edition (Merged Protection)
 local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
@@ -17,7 +17,6 @@ gui.Name = "ZoinsHub_Final"
 _G.DefenseActive = false
 _G.AlertsActive = false
 _G.FlingActive = false
-local hooksApplied = false
 local spamActive = false
 
 ---------------------------------------
@@ -99,7 +98,6 @@ stopBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 stopBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 createCorner(stopBtn, 8)
 
--- شريط الحالة (Status) المطلوب
 local statusLbl = Instance.new("TextLabel", spamFrame)
 statusLbl.Size = UDim2.new(1, 0, 0, 20)
 statusLbl.Position = UDim2.new(0, 0, 1, -25)
@@ -158,7 +156,123 @@ local function createToggle(name, pos, callback, fontSize)
 end
 
 ---------------------------------------
--- الواجهة الرئيسية (Main Hub)
+-- منطق الحماية المدمج (New Defense Logic)
+---------------------------------------
+
+-- الخيار الأول: منع اللاق ومسح السجلات
+createToggle("Anti-Lag / Anti-Logs HD", 45, function(state)
+    _G.DefenseActive = state
+    if state then
+        local function secureRemote(remote)
+            if remote:IsA("RemoteEvent") and remote.Name == "ExecuteClientCommand" then
+                if getconnections then
+                    for _, connection in pairs(getconnections(remote.OnClientEvent)) do
+                        connection:Disable()
+                    end
+                end
+                remote.OnClientEvent:Connect(function() return nil end)
+            end
+        end
+
+        for _, v in pairs(ReplicatedStorage:GetDescendants()) do secureRemote(v) end
+        ReplicatedStorage.DescendantAdded:Connect(function(d) if _G.DefenseActive then secureRemote(d) end end)
+
+        task.spawn(function()
+            while _G.DefenseActive do
+                setfpscap(999)
+                collectgarbage("collect")
+                task.wait(5)
+            end
+        end)
+
+        local signals = ReplicatedStorage:FindFirstChild("HDAdminHDClient")
+        if signals then signals = signals:FindFirstChild("Signals") end
+        if signals then
+            for _, remote in pairs(signals:GetDescendants()) do
+                if remote:IsA("RemoteEvent") or remote:IsA("RemoteFunction") then
+                    if string.find(remote.Name:lower(), "log") then
+                        remote:Destroy()
+                    end
+                end
+            end
+        end
+    end
+end, 11)
+
+-- الخيار الثاني: التنبيهات
+createToggle("Alerts/تنبيهات SYSTEM", 90, function(state)
+    _G.AlertsActive = state
+    if state then
+        for _, g in pairs(player.PlayerGui:GetChildren()) do
+            if g.Name == "HDAdminGui" or g.Name == "MessageGui" then g.Enabled = false end
+        end
+    else
+        for _, g in pairs(player.PlayerGui:GetChildren()) do
+            if g.Name == "HDAdminGui" or g.Name == "MessageGui" then g.Enabled = true end
+        end
+    end
+end)
+
+-- الخيار الثالث: حماية الطيران (تم دمج سكربت منع الجلوس هنا)
+local lastSafePos = nil
+createToggle("Fling/حماية الطيران", 135, function(state)
+    _G.FlingActive = state
+end)
+
+---------------------------------------
+-- التنبيهات ومنع الفلينج والجلوس (الخلفية)
+---------------------------------------
+player.PlayerGui.DescendantAdded:Connect(function(desc)
+    if _G.AlertsActive then
+        if desc.Name == "HDAdminGui" or desc.Name == "MessageGui" then
+            desc.Enabled = false
+        elseif desc:IsA("TextLabel") and (desc.Text:find("System") or desc.Text:find("too fast")) then
+            local container = desc.Parent
+            if container and container:IsA("Frame") then container.Visible = false end
+        end
+    end
+end)
+
+-- حلقة التكرار للفلينج + السكربت الجديد الخاص بك
+RunService.Heartbeat:Connect(function()
+    if _G.FlingActive then
+        -- جزء الحماية من الفلينج الأصلي
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local hrp = player.Character.HumanoidRootPart
+            if hrp.Velocity.Magnitude > 150 then
+                hrp.Velocity = Vector3.new(0,0,0)
+                hrp.RotVelocity = Vector3.new(0,0,0)
+                if lastSafePos then hrp.CFrame = lastSafePos end
+            else
+                lastSafePos = hrp.CFrame
+            end
+        end
+
+        -- جزء منع الجلوس وتثبيت الشخصية (السكربت المدمج)
+        pcall(function()
+            local char = player.Character
+            if char then
+                local hum = char:FindFirstChildOfClass("Humanoid")
+                if hum then 
+                    hum.Sit = false 
+                    hum.PlatformStand = false 
+                end
+                
+                for _, p in pairs(char:GetChildren()) do
+                    if p:IsA("BasePart") and p.Anchored then 
+                        p.Anchored = false 
+                    end
+                    if p:IsA("BodyMover") or p:IsA("BodyVelocity") or p:IsA("BodyGyro") then 
+                        p:Destroy() 
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+---------------------------------------
+-- الواجهة الرئيسية والتحكم
 ---------------------------------------
 local mainFrame = Instance.new("Frame", gui)
 mainFrame.Size = UDim2.new(0, 220, 0, 160)
@@ -204,97 +318,6 @@ mClose.BackgroundTransparency = 1
 mClose.TextSize = 24
 
 ---------------------------------------
--- منطق الحماية (Defense Logic)
----------------------------------------
-local function applyHooks()
-    if hooksApplied then return end
-    hooksApplied = true
-    local blocked = {"logs", "clogs", "re", "nv", "uncmdbar2", "mute", "res", "kill", "fling", "fly", "giant", "size"}
-    for _, f in pairs(getgc(true)) do
-        if typeof(f) == "function" and islclosure(f) and not isexecutorclosure(f) then
-            local env = getfenv(f)
-            if env and env.script then
-                local name = tostring(env.script):lower()
-                for _, word in pairs(blocked) do
-                    if name:find(word) then
-                        local old; old = hookfunction(f, function(...)
-                            if _G.DefenseActive then return nil end
-                            return old(...)
-                        end)
-                        break
-                    end
-                end
-            end
-        end
-    end
-end
-
-createToggle("Defense/حماية Clogs logs nv", 45, function(state)
-    _G.DefenseActive = state
-    if state then 
-        applyHooks()
-        task.spawn(function()
-            while _G.DefenseActive do
-                pcall(function()
-                    local char = player.Character
-                    if char then
-                        local hum = char:FindFirstChildOfClass("Humanoid")
-                        if hum then hum.Sit = false; hum.PlatformStand = false end
-                        for _, p in pairs(char:GetChildren()) do
-                            if p:IsA("BasePart") and p.Anchored then p.Anchored = false end
-                            if p:IsA("BodyMover") or p:IsA("BodyVelocity") or p:IsA("BodyGyro") then p:Destroy() end
-                        end
-                    end
-                end)
-                task.wait(0.3)
-            end
-        end)
-    end
-end, 11)
-
-createToggle("Alerts/تنبيهات SYSTEM", 90, function(state)
-    _G.AlertsActive = state
-    if state then
-        for _, g in pairs(player.PlayerGui:GetChildren()) do
-            if g.Name == "HDAdminGui" or g.Name == "MessageGui" then g.Enabled = false end
-        end
-    else
-        for _, g in pairs(player.PlayerGui:GetChildren()) do
-            if g.Name == "HDAdminGui" or g.Name == "MessageGui" then g.Enabled = true end
-        end
-    end
-end)
-
-player.PlayerGui.DescendantAdded:Connect(function(desc)
-    if _G.AlertsActive then
-        if desc.Name == "HDAdminGui" or desc.Name == "MessageGui" then
-            desc.Enabled = false
-        elseif desc:IsA("TextLabel") and (desc.Text:find("System") or desc.Text:find("too fast")) then
-            local container = desc.Parent
-            if container and container:IsA("Frame") then container.Visible = false end
-        end
-    end
-end)
-
-local lastSafePos = nil
-createToggle("Fling/حماية الطيران", 135, function(state)
-    _G.FlingActive = state
-end)
-
-RunService.Heartbeat:Connect(function()
-    if _G.FlingActive and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        local hrp = player.Character.HumanoidRootPart
-        if hrp.Velocity.Magnitude > 150 then
-            hrp.Velocity = Vector3.new(0,0,0)
-            hrp.RotVelocity = Vector3.new(0,0,0)
-            if lastSafePos then hrp.CFrame = lastSafePos end
-        else
-            lastSafePos = hrp.CFrame
-        end
-    end
-end)
-
----------------------------------------
 -- منطق السبام (Spam Logic)
 ---------------------------------------
 local function fireSpam(cmd)
@@ -312,7 +335,7 @@ startBtn.MouseButton1Click:Connect(function()
     if #cmds == 0 then return end
     spamActive = true
     statusLbl.Text = "Spamming..."
-    statusLbl.TextColor3 = Color3.fromRGB(0, 255, 100) -- اللون الأخضر عند النسخ
+    statusLbl.TextColor3 = Color3.fromRGB(0, 255, 100)
     task.spawn(function()
         while spamActive do
             for i=1,3 do for _,c in pairs(cmds) do if not spamActive then break end task.spawn(function() fireSpam(c) end) end end
@@ -328,9 +351,8 @@ stopBtn.MouseButton1Click:Connect(function()
 end)
 
 ---------------------------------------
--- التحكم في النوافذ (Window Logic)
+-- التبديل بين القوائم
 ---------------------------------------
--- زر X في الحماية يغلق الواجهة ويظهر Z
 local pClose = Instance.new("TextButton", protectFrame)
 pClose.Size = UDim2.new(0, 25, 0, 25)
 pClose.Position = UDim2.new(1, -30, 0, 5)
@@ -338,25 +360,14 @@ pClose.Text = "×"
 pClose.TextColor3 = Color3.fromRGB(255, 50, 50)
 pClose.BackgroundTransparency = 1
 pClose.TextSize = 20
-pClose.MouseButton1Click:Connect(function()
-    protectFrame.Visible = false
-    openCircle.Visible = true
-end)
+pClose.MouseButton1Click:Connect(function() protectFrame.Visible = false; openCircle.Visible = true end)
 
 copyBtn.MouseButton1Click:Connect(function() spamFrame.Visible = true; mainFrame.Visible = false end)
 openProtectBtn.MouseButton1Click:Connect(function() protectFrame.Visible = true; mainFrame.Visible = false end)
 mClose.MouseButton1Click:Connect(function() mainFrame.Visible = false; openCircle.Visible = true end)
 sClose.MouseButton1Click:Connect(function() spamFrame.Visible = false; openCircle.Visible = true end)
+openCircle.MouseButton1Click:Connect(function() mainFrame.Visible = true; spamFrame.Visible = false; protectFrame.Visible = false; openCircle.Visible = false end)
 
--- الضغط على Z يفتح الواجهة الرئيسية دائماً
-openCircle.MouseButton1Click:Connect(function() 
-    mainFrame.Visible = true
-    spamFrame.Visible = false
-    protectFrame.Visible = false
-    openCircle.Visible = false 
-end)
-
--- تأثير نبض النيون
 task.spawn(function()
     while true do
         local info = TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
