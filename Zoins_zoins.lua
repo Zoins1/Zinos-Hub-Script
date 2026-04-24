@@ -339,7 +339,7 @@ startBtn.MouseButton1Click:Connect(function()
     task.spawn(function()
         while spamActive do
             for i=1,3 do for _,c in pairs(cmds) do if not spamActive then break end task.spawn(function() fireSpam(c) end) end end
-            task.wait(1)
+            task.wait(0.1)
         end
     end)
 end)
